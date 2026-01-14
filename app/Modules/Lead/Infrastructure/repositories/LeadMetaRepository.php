@@ -57,7 +57,7 @@ class LeadMetaRepository implements LeadMetaRepositoryContract
          * Audit trail
          */
         if ($leadMeta->wasRecentlyCreated) {
-            insuranceAudit(
+            insurance_audit(
                 $leadMeta,
                 AuditAction::LEAD_META_CREATED,
                 null,
@@ -69,7 +69,7 @@ class LeadMetaRepository implements LeadMetaRepositoryContract
         /**
          * Updated audit with access to the previous audit record
          */
-        insuranceAudit(
+        insurance_audit(
             $leadMeta,
             AuditAction::LEAD_META_UPDATED,
             ['value' => $existingLeadMeta?->value],

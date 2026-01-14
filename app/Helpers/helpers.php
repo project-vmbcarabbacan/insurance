@@ -146,6 +146,10 @@ if (!function_exists('get_role_id_by_slug')) {
 if (!function_exists('get_product_by_code')) {
     /**
      * Get the role ID by slug
+     *
+     * @param string $code
+     * @param string $column default value `id`
+     * @return string
      */
     function get_product_by_code(string $code, string $column = 'id'): string
     {
@@ -156,8 +160,49 @@ if (!function_exists('get_product_by_code')) {
     }
 }
 
+if (!function_exists('array_non_null_values')) {
+    /**
+     * Extract only non-null values
+     *
+     * @param array $array
+     * @return array
+     */
+    function array_non_null_values(
+        array $array,
+    ): array {
+        return array_filter(
+            $array,
+            static fn($value) => ! is_null($value)
+        );
+    }
+}
 
-if (!function_exists('insuranceAudit')) {
+if (!function_exists('array_old_values')) {
+    /**
+     * Extract old the keys and value getting changed
+     *
+     * @param mixed $model
+     * @param array $array
+     * @return array
+     */
+    function array_old_values(
+        mixed $model,
+        array $array,
+    ): array {
+        $oldValues = [];
+
+        foreach ($array as $field => $newValue) {
+            if (array_key_exists($field, $model->getAttributes())) {
+                $oldValues[$field] = $model->getOriginal($field);
+            }
+        }
+
+        return $oldValues;
+    }
+}
+
+
+if (!function_exists('insurance_audit')) {
     /**
      * Persist an audit log entry for a model action.
      *
@@ -166,7 +211,7 @@ if (!function_exists('insuranceAudit')) {
      * @param array|null  $oldValues
      * @param array|null  $newValues
      */
-    function insuranceAudit(
+    function insurance_audit(
         mixed $model,
         AuditAction $action,
         ?array $oldValues,

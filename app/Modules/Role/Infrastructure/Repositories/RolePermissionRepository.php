@@ -41,7 +41,7 @@ class RolePermissionRepository implements RolePermissionRepositoryContract
         $permission = RolePermission::create($rolePermissionEntity->toArray());
 
         // Record audit log for user creation
-        insuranceAudit(
+        insurance_audit(
             $permission,
             AuditAction::PERMISSION_ASSIGNED,
             null,
@@ -61,7 +61,7 @@ class RolePermissionRepository implements RolePermissionRepositoryContract
     {
         $permission = RolePermission::find($rolePermissionId->value())->delete();
 
-        insuranceAudit(
+        insurance_audit(
             $permission,
             AuditAction::PERMISSION_REVOKED,
             ['status' => 'assigned'],
