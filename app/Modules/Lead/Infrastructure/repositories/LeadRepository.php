@@ -18,11 +18,11 @@ class LeadRepository implements LeadRepositoryContract
         $lead = Lead::create($leadEntity->toArray());
 
         // Record audit log for user creation
-        insuranceAudit(
+        insurance_audit(
             $lead,
             AuditAction::LEAD_CREATED,
             null,
-            ['type' => 'new']
+            ['status' => 'created']
         );
     }
 
@@ -36,11 +36,11 @@ class LeadRepository implements LeadRepositoryContract
             'status' => $leadStatus->value
         ]);
 
-        insuranceAudit(
+        insurance_audit(
             $lead,
             AuditAction::LEAD_STATUS_UPDATED,
             $oldValues,
-            ['type' => $leadStatus->value]
+            ['status' => $leadStatus->value]
         );
     }
 

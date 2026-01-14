@@ -97,7 +97,7 @@ class SanctumTokenService
     protected function logAudit(mixed $user, AuditAction $action, mixed $token, string $type): void
     {
         $token = is_array($token) ? 'token_ids' : 'token_id';
-        insuranceAudit(
+        insurance_audit(
             $user,
             $action,
             null,

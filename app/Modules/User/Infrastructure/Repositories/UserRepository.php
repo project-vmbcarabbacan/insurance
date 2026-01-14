@@ -32,11 +32,11 @@ class UserRepository implements UserRepositoryContract
             $user = User::create($createUserEntity->toArray());
 
             // Record audit log for user creation
-            insuranceAudit(
+            insurance_audit(
                 $user,
                 AuditAction::USER_CREATED,
                 null,
-                ['type' => 'new']
+                ['status' => 'created']
             );
         } catch (Throwable $e) {
             /* Wrap low-level exception to avoid leaking infrastructure details */
@@ -85,7 +85,7 @@ class UserRepository implements UserRepositoryContract
             'password' => $password->value(),
         ]);
 
-        insuranceAudit(
+        insurance_audit(
             $user,
             AuditAction::PASSWORD_CHANGED,
             $oldValues,
@@ -147,10 +147,7 @@ class UserRepository implements UserRepositoryContract
         /**
          * Extract only non-null values from the entity
          */
-        $updates = array_filter(
-            $userEntity->toArray(),
-            static fn($value) => ! is_null($value)
-        );
+        $updates = array_non_null_values($userEntity->toArray());
 
         if ($updates === []) {
             return;
@@ -159,17 +156,12 @@ class UserRepository implements UserRepositoryContract
         /**
          * Capture original values before update
          */
-        $oldValues = [];
+        $oldValues = array_old_values($user, $updates);
 
-        foreach ($updates as $field => $newValue) {
-            if (array_key_exists($field, $user->getAttributes())) {
-                $oldValues[$field] = $user->getOriginal($field);
-            }
-        }
 
         $user->update($updates);
 
-        insuranceAudit(
+        insurance_audit(
             $user,
             AuditAction::USER_UPDATED,
             $oldValues,
@@ -199,7 +191,7 @@ class UserRepository implements UserRepositoryContract
             'status' => $status->value,
         ]);
 
-        insuranceAudit(
+        insurance_audit(
             $user,
             $action,
             $oldValues,

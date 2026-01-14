@@ -104,6 +104,7 @@ enum AuditAction: string
     |--------------------------------------------------------------------------
     */
     case POLICY_DRAFT_CREATED = 'policy_draft_created';
+    case POLICY_UPDATED = 'policy_updated';
     case POLICY_NUMBER_GENERATED = 'policy_number_generated';
     case POLICY_ACTIVATED = 'policy_activated';
     case POLICY_CANCELLED = 'policy_cancelled';

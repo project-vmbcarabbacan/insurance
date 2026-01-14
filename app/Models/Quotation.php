@@ -39,6 +39,11 @@ class Quotation extends Model
         ];
     }
 
+    public function scopeLead($query, $leadId)
+    {
+        return $query->where('lead_id', $leadId);
+    }
+
     /**
      * Get all AuditLog attached to this quotation.
      */

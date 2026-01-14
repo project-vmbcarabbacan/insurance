@@ -9,7 +9,14 @@ enum PolicyStatus: string
     case DRAFT = 'draft';
     case ACTIVE = 'active';
     case EXPIRED = 'expired';
+    case SUSPENDED = 'suspended';
     case CANCELLED = 'cancelled';
+    case REINSTATED = 'reinstated';
+    case RENEWAL_INITIATED = 'renewal_initiated';
+    case RENEWED = 'renewed';
+    case NON_RENEWED = 'non_renewed';
+    case ENDORSED = 'endorsed';
+    case COVERAGE_UPDATED = 'coverage_updated';
 
     /**
      * Validate and return PolicyStatus enum from string value.

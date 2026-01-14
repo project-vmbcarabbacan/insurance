@@ -68,7 +68,7 @@ class CustomerRepository implements CustomerRepositoryContract
 
         $customer = Customer::create($payload);
 
-        insuranceAudit(
+        insurance_audit(
             $customer,
             AuditAction::CUSTOMER_CREATED,
             null,
@@ -90,10 +90,7 @@ class CustomerRepository implements CustomerRepositoryContract
         /**
          * Extract only non-null values
          */
-        $updates = array_filter(
-            $CustomerEntity->toArray(),
-            static fn($value) => ! is_null($value)
-        );
+        $updates = array_non_null_values($CustomerEntity->toArray());
 
         /**
          * No changes — avoid unnecessary DB hit
@@ -105,17 +102,11 @@ class CustomerRepository implements CustomerRepositoryContract
         /**
          * Capture original values for audit
          */
-        $oldValues = [];
-
-        foreach ($updates as $field => $newValue) {
-            if (array_key_exists($field, $customer->getAttributes())) {
-                $oldValues[$field] = $customer->getOriginal($field);
-            }
-        }
+        $oldValues = array_old_values($customer, $updates);
 
         $customer->update($updates);
 
-        insuranceAudit(
+        insurance_audit(
             $customer,
             AuditAction::CUSTOMER_UPDATED,
             $oldValues,
@@ -134,7 +125,7 @@ class CustomerRepository implements CustomerRepositoryContract
             'user_id' => $userId->value(),
         ]);
 
-        insuranceAudit(
+        insurance_audit(
             $customer,
             AuditAction::CUSTOMER_UPDATED,
             null,
@@ -159,7 +150,7 @@ class CustomerRepository implements CustomerRepositoryContract
             'status' => $customerStatus->value,
         ]);
 
-        insuranceAudit(
+        insurance_audit(
             $customer,
             AuditAction::CUSTOMER_UPDATED,
             $oldValues,

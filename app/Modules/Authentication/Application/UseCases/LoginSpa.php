@@ -98,7 +98,7 @@ class LoginSpa
      */
     protected function logAudit(mixed $user, AuditAction $action, LoginRequest $request): void
     {
-        insuranceAudit(
+        insurance_audit(
             $user,
             $action,
             null,

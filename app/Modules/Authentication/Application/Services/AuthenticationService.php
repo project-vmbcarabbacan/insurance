@@ -58,7 +58,7 @@ class AuthenticationService
         }
 
         if (!hash_equals($entity->password->value(), $user->password)) {
-            insuranceAudit(
+            insurance_audit(
                 $user,
                 AuditAction::USER_LOGIN_FAILED,
                 null,
@@ -68,7 +68,7 @@ class AuthenticationService
             throw new AuthenticationFailedException();
         }
 
-        insuranceAudit(
+        insurance_audit(
             $user,
             AuditAction::USER_LOGGED_IN,
             null,
@@ -106,7 +106,7 @@ class AuthenticationService
             Auth::logout();
 
             // Audit log for logout
-            insuranceAudit(
+            insurance_audit(
                 $user,
                 AuditAction::USER_LOGGED_OUT,
                 null,
