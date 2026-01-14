@@ -103,16 +103,17 @@ enum AuditAction: string
     | Policy Lifecycle
     |--------------------------------------------------------------------------
     */
-    case POLICY_DRAFT_CREATED = 'policy_draft_created';
+    case POLICY_DRAFT_CREATED = 'policy_draft_created'; // x
+    case POLICY_UPDATED = 'policy_updated';
     case POLICY_NUMBER_GENERATED = 'policy_number_generated';
-    case POLICY_ACTIVATED = 'policy_activated';
-    case POLICY_CANCELLED = 'policy_cancelled';
-    case POLICY_EXPIRED = 'policy_expired';
-    case POLICY_SUSPENDED = 'policy_suspended';
-    case POLICY_REINSTATED = 'policy_reinstated';
-    case POLICY_RENEWAL_INITIATED = 'policy_renewal_initiated';
-    case POLICY_RENEWED = 'policy_renewed';
-    case POLICY_NON_RENEWED = 'policy_non_renewed';
+    case POLICY_ACTIVATED = 'policy_activated'; // x
+    case POLICY_CANCELLED = 'policy_cancelled'; // x
+    case POLICY_EXPIRED = 'policy_expired'; // x
+    case POLICY_SUSPENDED = 'policy_suspended'; // x
+    case POLICY_REINSTATED = 'policy_reinstated'; // x
+    case POLICY_RENEWAL_INITIATED = 'policy_renewal_initiated'; // x
+    case POLICY_RENEWED = 'policy_renewed'; // x
+    case POLICY_NON_RENEWED = 'policy_non_renewed'; // x
     case POLICY_ENDORSED = 'policy_endorsed';
     case POLICY_COVERAGE_UPDATED = 'policy_coverage_updated';
 
