@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('vehicle_policies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('policy_id')->constrained('policies')->cascadeOnDelete();
-            $table->string('vehicle_type', 10);
-            $table->string('vehicle_make', 100);
-            $table->string('vehicle_model', 100);
+            $table->string('type', 10);
+            $table->string('make', 100);
+            $table->string('model', 100);
             $table->integer('year');
-            $table->string('identifier_type', 50)->comment('VIN | CHASSIS_NUMBER');
-            $table->string('plate_number', 30);
-            $table->string('engine_number', 50);
-            $table->decimal('vehicle_value', 12, 2);
+            $table->string('identifier_type', 50)->comment('VIN | CHASSIS_NUMBER')->nullable();
+            $table->string('plate_number', 30)->nullable();
+            $table->string('engine_number', 50)->nullable();
+            $table->decimal('current_value', 12, 2)->nullable();
+            $table->string('currency', 10);
         });
     }
 

@@ -7,12 +7,12 @@ use App\Modules\Policy\Domain\Contracts\PolicyRepositoryContract;
 use App\Modules\Policy\Domain\Entities\AddPolicyEntity;
 use App\Modules\Policy\Domain\Entities\UpdatePolicyEntity;
 use App\Shared\Domain\Enums\AuditAction;
-use App\Shared\Domain\Enums\PolicyStatus;
 use App\Shared\Domain\ValueObjects\GenericId;
 
 abstract class PolicyRepository implements PolicyRepositoryContract
 {
     abstract public function addProductPolicy(array $data): void;
+    abstract public function updateProductPolicy(GenericId $id, array $data): void;
 
     public function addPolicy(AddPolicyEntity $addPolicyEntity): void
     {
@@ -28,7 +28,7 @@ abstract class PolicyRepository implements PolicyRepositoryContract
 
     public function updatePolicy(GenericId $policyId, UpdatePolicyEntity $updatePolicyEntity): void
     {
-        $policy = $this->findById($policyId);
+        $policy = $this->findPolicyById($policyId);
 
         /**
          * Extract only non-null values
@@ -57,26 +57,7 @@ abstract class PolicyRepository implements PolicyRepositoryContract
         );
     }
 
-
-    public function updateStatus(GenericId $policyId, PolicyStatus $policyStatus)
-    {
-        $policy = $this->findById($policyId);
-
-        $oldValues = ['status' => $policy->status];
-
-        $policy->update([
-            'status' => $policyStatus->value
-        ]);
-
-        insurance_audit(
-            $policy,
-            AuditAction::POLICY_UPDATED,
-            $oldValues,
-            ['status' => $policyStatus->value]
-        );
-    }
-
-    public function findById(GenericId $policyId): ?Policy
+    public function findPolicyById(GenericId $policyId): ?Policy
     {
         return Policy::find($policyId->value());
     }

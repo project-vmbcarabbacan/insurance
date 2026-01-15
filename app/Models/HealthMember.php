@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Shared\Domain\ValueObjects\GenericId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -42,5 +44,10 @@ class HealthMember extends Model
     public function audits(): MorphMany
     {
         return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    public function scopeHealth(Builder $query, GenericId $health_policy_id)
+    {
+        return $query->where('health_policy_id', $health_policy_id);
     }
 }

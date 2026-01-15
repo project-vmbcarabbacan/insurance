@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('coverage_type', 30);
             $table->text('hospital_network');
             $table->decimal('max_coverage', 12, 2);
+            $table->string('currency', 10);
             $table->text('pre_existing_conditions')->nullable();
         });
     }

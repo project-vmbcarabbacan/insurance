@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Shared\Domain\Enums\PropertyType;
+use App\Shared\Domain\ValueObjects\GenericId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -62,5 +64,10 @@ class HomePolicy extends Model
     public function audits(): MorphMany
     {
         return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    public function scopePolicy(Builder $query, GenericId $policyId)
+    {
+        return $query->where('policy_id', $policyId->value());
     }
 }

@@ -6,7 +6,7 @@ use App\Shared\Domain\Enums\PolicyStatus;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\LowerText;
 
-class AddPolicyEntity
+final class AddPolicyEntity
 {
     public function __construct(
         public readonly GenericId $lead_id,
@@ -15,7 +15,6 @@ class AddPolicyEntity
         public readonly GenericId $quotation_id,
         public readonly GenericId $provider_id,
         public readonly GenericId $plan_id,
-        public readonly PolicyStatus $policy_status,
     ) {}
 
     public function toArray()
@@ -27,7 +26,6 @@ class AddPolicyEntity
             'quotation_id' => $this->quotation_id->value(),
             'provider_id' => $this->provider_id->value(),
             'plan_id' => $this->plan_id->value(),
-            'policy_status' => $this->policy_status->value,
         ];
     }
 }

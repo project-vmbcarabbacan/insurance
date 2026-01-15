@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Shared\Domain\Enums\CoverageType;
 use Illuminate\Database\Eloquent\Model;
+use App\Shared\Domain\ValueObjects\GenericId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class HealthPolicy extends Model
@@ -73,5 +75,10 @@ class HealthPolicy extends Model
     public function audits(): MorphMany
     {
         return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    public function scopePolicy(Builder $query, GenericId $policyId)
+    {
+        return $query->where('policy_id', $policyId->value());
     }
 }

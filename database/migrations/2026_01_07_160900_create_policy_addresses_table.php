@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('address');
             $table->integer('year_built');
             $table->decimal('property_value', 12, 2);
+            $table->string('currency', 10);
         });
     }
 

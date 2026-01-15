@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('health_policy_id')->constrained('health_policies')->cascadeOnDelete();
             $table->string('first_name', 100);
             $table->string('last_name', 100);
-            $table->date('dob');
+            $table->date('date_of_birth');
             $table->string('relationship', 50);
         });
     }

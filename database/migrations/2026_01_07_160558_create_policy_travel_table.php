@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('destination_country', 100);
             $table->string('trip_type', 100);
             $table->decimal('coverage_amount', 12, 2);
+            $table->string('currency', 10);
         });
     }
 
