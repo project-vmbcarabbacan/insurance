@@ -6,17 +6,130 @@ use App\Shared\Domain\Exceptions\InvalidValueException;
 
 enum PolicyStatus: string
 {
+    /**
+     * WHEN
+     *  - Policy is being created
+     *  - Quotation exists but no payment / no issuance
+     *  - Incomplete data
+     *
+     * Changes to
+     *  - ACTIVE → once payment is successful & policy is issued
+     *  - CANCELLED → draft is abandoned or explicitly cancelled
+     *
+     */
     case DRAFT = 'draft';
+
+    /**
+     * WHEN
+     *  - Policy is issued
+     *  - Payment completed
+     *  - Coverage start date reached
+     *
+     * Changes to
+     *  - SUSPENDED → non-payment, compliance issue
+     *  - EXPIRED → end date reached without renewal
+     *  - CANCELLED → customer or insurer cancels
+     *  - ENDORSED → endorsement applied
+     *  - COVERAGE_UPDATED → coverage limits/benefits changed
+     *  - RENEWAL_INITIATED → renewal process started
+     */
     case ACTIVE = 'active';
-    case EXPIRED = 'expired';
+
+    /**
+     * WHEN
+     *  - Missed payment
+     *  - Regulatory or underwriting issue
+     *  - Temporary stop of coverage
+     *
+     * Changes to
+     *  - REINSTATED → issue resolved (payment made)
+     *  - CANCELLED → suspension period exceeded
+     *  - EXPIRED → term ends while suspended
+     */
     case SUSPENDED = 'suspended';
-    case CANCELLED = 'cancelled';
+
+    /**
+     * WHEN
+     *  - Suspended policy is restored
+     *  - Outstanding obligations fulfilled
+     *
+     * Changes to
+     *  - ACTIVE → immediately after reinstatement
+     */
     case REINSTATED = 'reinstated';
+
+    /**
+     * WHEN
+     *  - Policy is approaching expiration
+     *  - Renewal offer generated
+     *  - Awaiting customer action/payment
+     *
+     * Changes to
+     *  - RENEWED → renewal completed
+     *  - NON_RENEWED → customer declines / no response
+     *  - EXPIRED → renewal window passes
+     */
     case RENEWAL_INITIATED = 'renewal_initiated';
+
+    /**
+     * WHEN
+     *  - Renewal payment completed
+     *  - New policy term created
+     *
+     * Changes to
+     *  - ACTIVE → new term becomes active
+     */
     case RENEWED = 'renewed';
+
+    /**
+     * WHEN
+     *  - Customer explicitly declines renewal
+     *  - Underwriting rejects renewal
+     *
+     * Changes to
+     *  - EXPIRED → at end of current term
+     */
     case NON_RENEWED = 'non_renewed';
+
+    /**
+     * WHEN
+     *  - Policy amendment (address, insured object, beneficiaries)
+     *  - Does not change coverage amount
+     *
+     * Changes to
+     *  - ACTIVE → after endorsement is finalized
+     */
     case ENDORSED = 'endorsed';
+
+    /**
+     * WHEN
+     *  - Coverage limits changed
+     *  - Add/remove riders
+     *  - Premium recalculated
+     *
+     * Changes to
+     *  - ACTIVE → once update is applied
+     */
     case COVERAGE_UPDATED = 'coverage_updated';
+
+    /**
+     * END STATE
+     */
+
+        /**
+     * WHEN
+     *  - Policy end date reached
+     *  - No successful renewal
+     */
+    case EXPIRED = 'expired';
+
+    /**
+     * WHEN
+     *  - Customer cancellation
+     *  - Insurer cancellation
+     *  - Fraud or underwriting failure
+     */
+    case CANCELLED = 'cancelled';
 
     /**
      * Validate and return PolicyStatus enum from string value.

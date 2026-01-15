@@ -17,23 +17,62 @@ final class PolicyAuditTransitionMap
             ],
 
             AuditAction::POLICY_ACTIVATED => [
-                'from' => PolicyStatus::DRAFT,
-                'to' => PolicyStatus::ACTIVE,
+                'from' => [
+                    PolicyStatus::DRAFT,
+                    PolicyStatus::REINSTATED,
+                    PolicyStatus::RENEWED,
+                    PolicyStatus::ENDORSED,
+                    PolicyStatus::COVERAGE_UPDATED
+                ],
+                'to' => PolicyStatus::ACTIVE
             ],
 
             AuditAction::POLICY_SUSPENDED => [
-                'from' => PolicyStatus::ACTIVE,
-                'to' => PolicyStatus::SUSPENDED,
+                'from' => PolicyStatus::DRAFT,
+                'to' => PolicyStatus::SUSPENDED
             ],
 
             AuditAction::POLICY_REINSTATED => [
                 'from' => PolicyStatus::SUSPENDED,
-                'to' => PolicyStatus::ACTIVE,
+                'to' => PolicyStatus::REINSTATED
             ],
 
-            AuditAction::POLICY_EXPIRED => [
+            AuditAction::POLICY_RENEWAL_INITIATED => [
                 'from' => PolicyStatus::ACTIVE,
-                'to' => PolicyStatus::EXPIRED,
+                'to' => PolicyStatus::RENEWAL_INITIATED
+            ],
+
+            AuditAction::POLICY_RENEWED => [
+                'from' => PolicyStatus::RENEWAL_INITIATED,
+                'to' => PolicyStatus::RENEWED
+            ],
+
+            AuditAction::POLICY_NON_RENEWED => [
+                'from' => PolicyStatus::RENEWAL_INITIATED,
+                'to' => PolicyStatus::NON_RENEWED
+            ],
+
+            AuditAction::POLICY_ENDORSED => [
+                'from' => PolicyStatus::ACTIVE,
+                'to' => PolicyStatus::ENDORSED
+            ],
+
+            AuditAction::POLICY_COVERAGE_UPDATED => [
+                'from' => PolicyStatus::ACTIVE,
+                'to' => PolicyStatus::COVERAGE_UPDATED
+            ],
+
+            /**
+             * END STATE
+             */
+            AuditAction::POLICY_EXPIRED => [
+                'from' => [
+                    PolicyStatus::ACTIVE,
+                    PolicyStatus::SUSPENDED,
+                    PolicyStatus::NON_RENEWED,
+                    PolicyStatus::RENEWAL_INITIATED,
+                ],
+                'to' => PolicyStatus::EXPIRED
             ],
 
             AuditAction::POLICY_CANCELLED => [
@@ -42,36 +81,7 @@ final class PolicyAuditTransitionMap
                     PolicyStatus::ACTIVE,
                     PolicyStatus::SUSPENDED,
                 ],
-                'to' => PolicyStatus::CANCELLED,
-            ],
-
-            AuditAction::POLICY_RENEWED => [
-                'from' => PolicyStatus::ACTIVE,
-                'to' => PolicyStatus::RENEWED,
-            ],
-
-            AuditAction::POLICY_NON_RENEWED => [
-                'from' => PolicyStatus::RENEWED,
-                'to' => PolicyStatus::NON_RENEWED,
-            ],
-
-            AuditAction::POLICY_ENDORSED => [
-                'from' => [
-                    PolicyStatus::SUSPENDED,
-                    PolicyStatus::CANCELLED,
-                    PolicyStatus::EXPIRED,
-                    PolicyStatus::NON_RENEWED,
-                    PolicyStatus::REINSTATED,
-                ],
-                'to' => PolicyStatus::ENDORSED,
-            ],
-
-            AuditAction::POLICY_RENEWAL_INITIATED => [
-                'from' => [
-                    PolicyStatus::RENEWED,
-                    PolicyStatus::NON_RENEWED,
-                ],
-                'to' => PolicyStatus::RENEWAL_INITIATED,
+                'to' => PolicyStatus::CANCELLED
             ],
 
         ];
