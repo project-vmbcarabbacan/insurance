@@ -86,9 +86,9 @@ class AuthenticationService
      * @param array $credentials
      * @return bool True if authentication succeeded, false otherwise
      */
-    public function attemp(array $credentials): bool
+    public function attempt(array $credentials): bool
     {
-        return Auth::attempt($credentials);
+        return Auth::guard('web')->attempt($credentials);
     }
 
     /**

@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('provider_id')->constrained('policy_providers')->cascadeOnDelete();
-            $table->foreignId('insurance_product_code')->constrained('insurance_products')->cascadeOnDelete();
+            $table->string('insurance_product_code');
+            $table->foreign('insurance_product_code')->references('code')->on('insurance_products')->cascadeOnDelete();
             $table->string('code', 50)->unique();
             $table->string('name', 150);
             $table->text('description')->nullable();

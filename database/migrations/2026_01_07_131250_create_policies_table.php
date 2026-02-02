@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('policy_number', 50)->nullable()->unique();
             $table->foreignId('lead_id')->constrained('leads')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
-            $table->foreignId('insurance_product_code')->constrained('insurance_products')->cascadeOnDelete();
-            $table->foreignId('quotation_id')->constrained('quotes')->cascadeOnDelete();
+            $table->string('insurance_product_code');
+            $table->foreign('insurance_product_code')->references('code')->on('insurance_products')->cascadeOnDelete();
+            $table->foreignId('quotation_id')->constrained('quotations')->cascadeOnDelete();
             $table->string('status', 30);
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();

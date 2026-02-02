@@ -4,13 +4,16 @@ namespace App\Modules\User\Domain\Contracts;
 
 use App\Models\User;
 use App\Modules\User\Domain\Entities\CreateUserEntity;
+use App\Modules\User\Domain\Entities\PaginatedUserEntity;
 use App\Modules\User\Domain\Entities\UserEntity;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\Password;
 use App\Shared\Domain\ValueObjects\GenericId;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface UserRepositoryContract
 {
+    public function paginatedUser(PaginatedUserEntity $paginatedUserEntity): ?LengthAwarePaginator;
     public function createUser(CreateUserEntity $createUserEntity): void;
     public function findUserById(GenericId $userId): ?User;
     public function findUserByEmail(Email $email): ?User;

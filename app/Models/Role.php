@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Role extends Model
 {
@@ -27,9 +28,14 @@ class Role extends Model
     /**
      * Scope to filter by slug
      */
-    public function scopeSlug($query, $slug)
+    public function scopeSlug(Builder $query, string $slug)
     {
         return $query->where('slug', $slug);
+    }
+
+    public function scopeNoSuperAdmin(Builder $query)
+    {
+        return $query->where('slug', '<>', 'super_admin');
     }
 
     /**

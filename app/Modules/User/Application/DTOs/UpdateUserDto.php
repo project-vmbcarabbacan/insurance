@@ -11,6 +11,7 @@ class UpdateUserDto
     public function __construct(
         public readonly GenericId $user_id,
         public readonly LowerText $name,
-        public readonly Email $email
+        public readonly Email $email,
+        public readonly ?LowerText $role,
     ) {}
 }

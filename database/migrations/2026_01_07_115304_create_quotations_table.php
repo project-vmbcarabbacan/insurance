@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('quote_number', 50)->unique();
             $table->foreignId('lead_id')->constrained('leads')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
-            $table->foreignId('insurance_product_code')->constrained('insurance_products')->cascadeOnDelete();
+            $table->string('insurance_product_code');
+            $table->foreign('insurance_product_code')->references('code')->on('insurance_products')->cascadeOnDelete();
             $table->decimal('price', 12, 2);
             $table->decimal('vat', 12, 2);
             $table->string('currency', 10);

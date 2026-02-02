@@ -3,10 +3,12 @@
 namespace App\Modules\Authentication\Application\UseCases;
 
 use App\Modules\Authentication\Application\DTOs\LoginDto;
+use App\Modules\Authentication\Application\Exceptions\AuthenticationStatusNotActiveException;
 use App\Modules\Authentication\Application\Services\AuthenticationService;
 use App\Modules\Authentication\Infrastructure\Http\Requests\LoginRequest;
 use App\Modules\User\Application\Services\UserService;
 use App\Shared\Domain\Enums\AuditAction;
+use App\Shared\Domain\Enums\GenericStatus;
 use DomainException;
 
 /**
@@ -55,18 +57,16 @@ class LoginSpa
         // Map DTO to credential array for the authentication service
         $credentials = [
             'email'    => $login->email->value(),
-            'password' => $login->password->value(),
+            'password' => $login->password->plain(),
         ];
-
         // Attempt authentication
-        $authenticated = $this->authentication_service->attemp($credentials);
+        $authenticated = $this->authentication_service->attempt($credentials);
 
-        $user = null;
+        // Retrieve user by email to record failed login audit if user exists
+        $user = $this->user_service->getEmail($login->email);
 
         // Handle failed authentication
         if (! $authenticated) {
-            // Retrieve user by email to record failed login audit if user exists
-            $user = $this->user_service->getEmail($login->email);
 
             if ($user) {
                 $this->logAudit($user, AuditAction::USER_LOGIN_FAILED, $request);
@@ -76,16 +76,20 @@ class LoginSpa
             throw new DomainException('Invalid Credentials');
         }
 
+
         // Authentication successful: retrieve user if not already loaded
-        $user = $user ?? $this->user_service->getEmail($login->email);
+        $user = auth('web')->user() ?? $this->user_service->getEmail($login->email);
+
+        if ($user->status !== GenericStatus::ACTIVE) {
+            throw new AuthenticationStatusNotActiveException();
+        }
 
         // Record successful login audit
         if ($user) {
             $this->logAudit($user, AuditAction::USER_LOGGED_IN, $request);
         }
 
-        // Regenerate session to prevent session fixation attacks
-        $request->session()->regenerate();
+        return $user;
     }
 
     /**

@@ -12,4 +12,9 @@ class UserServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryContract::class, UserRepository::class);
     }
+
+    public function boot()
+    {
+        $this->loadRoutesFrom(__DIR__ . '/../Infrastructure/Routes/api.php');
+    }
 }

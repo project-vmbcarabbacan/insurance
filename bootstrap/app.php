@@ -1,10 +1,18 @@
 <?php
 
 use App\Shared\Domain\Exceptions\ApplicationException;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use Illuminate\Foundation\Http\Middleware\TrimStrings;
+use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,15 +21,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->statefulApi();
         // GLOBAL middleware (all requests)
         $middleware->use([
-            // ...
+            TrustProxies::class,
+            HandleCors::class,
+
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            ShareErrorsFromSession::class,
+
+            TrimStrings::class,
+            ConvertEmptyStringsToNull::class,
         ]);
 
         // API middleware group
         $middleware->group('api', [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })
@@ -32,13 +49,5 @@ return Application::configure(basePath: dirname(__DIR__))
                 $e->toArray(),
                 $e->statusCode()
             );
-        });
-
-        // Optionally handle other exceptions
-        $exceptions->render(function (\Throwable $e, Request $request) {
-            return response()->json([
-                'error' => 'SERVER_ERROR',
-                'message' => $e->getMessage(),
-            ], 500);
         });
     })->create();

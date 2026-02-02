@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('insurance_product_code')->constrained('insurance_products')->cascadeOnDelete();
+            $table->string('insurance_product_code');
+            $table->foreign('insurance_product_code')->references('code')->on('insurance_products')->cascadeOnDelete();
             $table->string('source', 50);
             $table->string('status', 30)->default('new');
             $table->foreignId('assigned_agent_id')->constrained('users')->cascadeOnDelete();

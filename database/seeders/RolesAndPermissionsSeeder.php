@@ -188,7 +188,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 if (in_array('*', $perms)) {
                     $allPermissionIds = DB::table('permissions')->pluck('id');
                     foreach ($allPermissionIds as $pid) {
-                        DB::table('role_permission')->updateOrInsert([
+                        DB::table('role_permissions')->updateOrInsert([
                             'role_id' => $roleId,
                             'permission_id' => $pid,
                         ]);
@@ -199,7 +199,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 foreach ($perms as $permSlug) {
                     $permId = DB::table('permissions')->where('slug', $permSlug)->value('id');
 
-                    DB::table('role_permission')->updateOrInsert([
+                    DB::table('role_permissions')->updateOrInsert([
                         'role_id' => $roleId,
                         'permission_id' => $permId,
                     ]);

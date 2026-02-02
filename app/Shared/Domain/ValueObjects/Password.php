@@ -7,19 +7,19 @@ use App\Shared\Domain\Exceptions\InvalidValueException;
 final class Password
 {
     private string $hashed;
+    private string $plain;
 
-    private function __construct(string $hashed)
+    private function __construct(string $password)
     {
-        $this->hashed = $hashed;
+        $this->hashed = password_hash($password, PASSWORD_BCRYPT);
+        $this->plain = $password;
     }
 
     public static function fromPlain(string $plain): self
     {
         self::assertStrong($plain);
 
-        return new self(
-            password_hash($plain, PASSWORD_BCRYPT)
-        );
+        return new self($plain, PASSWORD_BCRYPT);
     }
 
     public static function fromHash(string $hashed): self
@@ -41,9 +41,14 @@ final class Password
         return $this->hashed;
     }
 
+    public function plain(): string
+    {
+        return $this->plain;
+    }
+
     public function equals(self $other): bool
     {
-        return hash_equals($this->hashed, $other->hashed);
+        return $this->plain === $other->plain;
     }
 
     private static function assertStrong(string $plain): void

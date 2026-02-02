@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
             $table->foreignId('permission_id')->constrained('permissions')->cascadeOnDelete();
-            $table->unsignedBigInteger('permission_id');
 
             $table->unique(['role_id', 'permission_id']);
         });

@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Domain\Entities;
 
+use App\Shared\Domain\Enums\GenericStatus;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Password;
@@ -14,7 +15,7 @@ final class CreateUserEntity
         public readonly Email $email,
         public readonly Password $password,
         public readonly GenericId $role_id,
-        public readonly LowerText $status
+        public readonly GenericStatus $status
     ) {}
 
     public function toArray()
@@ -24,7 +25,7 @@ final class CreateUserEntity
             'email' => $this->email->value(),
             'password' => $this->password->value(),
             'role_id' => $this->role_id->value(),
-            'status' => $this->status->value(),
+            'status' => $this->status,
         ];
     }
 }

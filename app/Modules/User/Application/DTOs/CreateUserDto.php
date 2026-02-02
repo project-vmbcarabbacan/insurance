@@ -14,6 +14,6 @@ class CreateUserDto
         public readonly Email $email,
         public readonly Password $password,
         public readonly LowerText $role,
-        public readonly LowerText $status = GenericStatus::ACTIVE
+        public readonly GenericStatus $status = GenericStatus::ACTIVE
     ) {}
 }

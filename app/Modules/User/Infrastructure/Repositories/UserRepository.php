@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Modules\User\Application\Exceptions\UserNotFoundException;
 use App\Modules\User\Domain\Contracts\UserRepositoryContract;
 use App\Modules\User\Domain\Entities\CreateUserEntity;
+use App\Modules\User\Domain\Entities\PaginatedUserEntity;
 use App\Modules\User\Domain\Entities\UserEntity;
 use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\Enums\GenericStatus;
@@ -13,10 +14,72 @@ use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Password;
 use App\Shared\Infrastructure\Exceptions\DatabaseException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Throwable;
 
 class UserRepository implements UserRepositoryContract
 {
+    /**
+     * Retrieve a paginated list of users with optional filtering.
+     *
+     * This method builds a query on the User model and applies the following filters:
+     * 1. Status: Filters users based on their current status (active, inactive, suspended).
+     * 2. Keyword: Searches across the user's name and email if a keyword is provided.
+     * 3. Role: Filters users by their assigned role if a role_id is provided.
+     *
+     * It returns a paginated result set based on the specified `per_page` value in the
+     * PaginatedUserEntity.
+     *
+     * Example usage:
+     * ```php
+     * $paginatedUsers = $userRepository->paginatedUser(
+     *     new PaginatedUserEntity(
+     *         status: GenericStatus::ACTIVE,
+     *         per_page: 10,
+     *         keyword: 'vincent',
+     *         role_id: 2
+     *     )
+     * );
+     * ```
+     *
+     * @param PaginatedUserEntity $paginatedUserEntity Contains filters and pagination info
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator Paginated list of users
+     */
+    public function paginatedUser(PaginatedUserEntity $paginatedUserEntity): ?LengthAwarePaginator
+    {
+        // Start building the query
+        $query = User::query();
+
+        // Filter users by status using enum
+        $query = match ($paginatedUserEntity->status) {
+            GenericStatus::ACTIVE => $query->active(),
+            GenericStatus::INACTIVE => $query->inactive(),
+            GenericStatus::SUSPENDED => $query->suspended(),
+            default => $query,
+        };
+
+        // Filter by keyword in name or email if provided
+        $query->when(
+            $paginatedUserEntity->keyword,
+            fn($q, $keyword) => $q->search($keyword)
+        );
+
+        // Filter by role_slug if provided
+        $query->when(
+            $paginatedUserEntity->role_slug,
+            fn($q, $slug) => $q->whereHas(
+                'role',
+                fn($r) =>
+                $r->where('slug', $slug)
+            )
+        );
+
+        $query->whereHas('role', fn($q) => $q->noSuperAdmin());
+
+        return $query->paginate($paginatedUserEntity->per_page);
+    }
+
     /**
      * Create a new user in the system and record an audit log.
      *

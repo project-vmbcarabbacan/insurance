@@ -5,16 +5,23 @@ namespace App\Modules\User\Application\Services;
 use App\Models\User;
 use App\Modules\User\Domain\Contracts\UserRepositoryContract;
 use App\Modules\User\Domain\Entities\CreateUserEntity;
+use App\Modules\User\Domain\Entities\PaginatedUserEntity;
 use App\Modules\User\Domain\Entities\UserEntity;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Password;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserService
 {
     public function __construct(
         protected UserRepositoryContract $user_repository_contract
     ) {}
+
+    public function getPaginatedUsers(PaginatedUserEntity $paginatedUserEntity): LengthAwarePaginator
+    {
+        return $this->user_repository_contract->paginatedUser($paginatedUserEntity);
+    }
 
     /**
      * Retrieve a user by email address.

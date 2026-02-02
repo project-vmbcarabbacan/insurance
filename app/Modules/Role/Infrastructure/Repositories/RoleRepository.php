@@ -27,7 +27,7 @@ class RoleRepository implements RoleRepositoryContract
      */
     public function getAllRoles(): Collection
     {
-        return Role::query()->get();
+        return Role::query()->noSuperAdmin()->get();
     }
 
     /**

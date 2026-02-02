@@ -9,6 +9,7 @@ use App\Modules\Authentication\Application\UseCases\LogoutMobile;
 use App\Modules\Authentication\Application\UseCases\LogoutSpa;
 use App\Modules\Authentication\Infrastructure\Http\Requests\LoginRequest;
 use App\Modules\User\Application\Exceptions\UserNotFoundException;
+use App\Modules\User\Infrastructure\Http\Resources\CurrentUserResource;
 use Illuminate\Support\Facades\Request;
 
 class AuthenticationController
@@ -21,9 +22,14 @@ class AuthenticationController
     {
         $dto = $request->toDTO();
 
-        $login_spa->execute($dto, $request);
+        $user = $login_spa->execute($dto, $request);
 
-        return response()->json(["message" => "Logged in successfully!"]);
+        $request->session()->regenerate();
+
+        return response()->json([
+            "message" => "Logged in successfully!",
+            "user" => new CurrentUserResource($user)
+        ]);
     }
 
     public function spaLogout(Request $request, LogoutSpa $logout_spa)

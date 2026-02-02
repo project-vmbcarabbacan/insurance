@@ -5,7 +5,6 @@ namespace App\Modules\User\Application\UseCases;
 use App\Modules\User\Application\DTOs\UserStatusDto;
 use App\Modules\User\Application\Services\UserService;
 use App\Shared\Domain\Enums\GenericStatus;
-use App\Shared\Domain\Exceptions\InvalidValueException;
 
 class UpdateUserStatus
 {

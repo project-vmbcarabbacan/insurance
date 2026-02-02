@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Shared\Domain\Enums\GenericStatus;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -18,12 +19,8 @@ class DatabaseSeeder extends Seeder
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(InsuranceProductSeeder::class);
         $this->call(DocumentTypesSeeder::class);
-
-        User::factory()->create([
-            'name' => 'System',
-            'email' => 'system@example.com',
-            'role_id' => 1,
-            'status' => 1,
-        ]);
+        $this->call(SystemUserSeeder::class);
+        $this->call(VehicleMakeSeeder::class);
+        $this->call(VehicleModelSeeder::class);
     }
 }

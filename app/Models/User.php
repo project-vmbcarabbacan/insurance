@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable
 {
@@ -34,6 +35,7 @@ class User extends Authenticatable
      */
     protected static function boot(): void
     {
+        parent::boot();
         static::addGlobalScope(new ExcludeDeletedScope());
     }
 
@@ -111,6 +113,41 @@ class User extends Authenticatable
     public function scopeDeleted($query)
     {
         return $query->withoutGlobalScope(ExcludeDeletedScope::class)->where('status', GenericStatus::DELETED->value);
+    }
+
+    /**
+     * Scope a query to filter users by a search term across multiple fields.
+     *
+     * This scope searches for the given term in:
+     * - name
+     * - email
+     *
+     * It uses SQL LIKE with wildcards to match partial terms.
+     *
+     * Example usage:
+     * ```php
+     * User::search('vincent')->get();
+     * User::search('vmbcarabbacan@gmail.com')->get();
+     * ```
+     *
+     * @param Builder $query The Eloquent query builder
+     * @param string $term The search term to match
+     * @return Builder
+     */
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        $term = trim($term);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        return $query->where(function (Builder $q) use ($term) {
+            $like = "%{$term}%";
+
+            $q->where('name', 'like', $like)
+                ->orWhere('email', 'like', $like);
+        });
     }
 
     /**

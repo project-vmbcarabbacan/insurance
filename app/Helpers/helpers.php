@@ -9,6 +9,7 @@ use App\Shared\Domain\Enums\RoleSlug;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Vinkla\Hashids\Facades\Hashids;
 
 if (!function_exists('random_string')) {
     /**
@@ -172,7 +173,14 @@ if (!function_exists('array_non_null_values')) {
     ): array {
         return array_filter(
             $array,
-            static fn($value) => ! is_null($value)
+            static fn($value) =>
+            !is_null($value)
+                && !(
+                    is_string($value) && trim($value) === ''
+                )
+                && !(
+                    is_array($value) && empty($value)
+                )
         );
     }
 }
@@ -224,5 +232,62 @@ if (!function_exists('insurance_audit')) {
             'new_values' => $newValues,
             'created_at' => Carbon::now(),
         ]);
+    }
+}
+
+if (!function_exists('add_http_protocol')) {
+    function add_http_protocol(string $urls, string $protocol = "http")
+    {
+        if (empty($urls) || $urls == '*') return ['*'];
+
+        $parts = array_filter(
+            array_map('trim', explode(',', $urls)),
+            fn($url) => $url !== ''
+        );
+
+        return array_map(function ($url) use ($protocol) {
+            $url = trim($url);
+
+            if (!preg_match('#^https?://#', $url)) {
+                $url = "$protocol://$url";
+            }
+
+            return $url;
+        }, $parts);
+    }
+}
+
+if (!function_exists('get_initials')) {
+    function get_initials(string $name)
+    {
+        $words = array_values(array_filter(explode(" ", trim($name))));
+
+        $initials = "";
+
+        if (count($words) >= 1) {
+            $initials .= strtoupper($words[0][0]); // first name
+        }
+
+        if (count($words) >= 2) {
+            $initials .= strtoupper($words[count($words) - 1][0]); // last name
+        }
+
+        return $initials;
+    }
+}
+
+if (!function_exists('encrypt')) {
+    function encrypt(string | int $value)
+    {
+        return Hashids::encode($value);
+    }
+}
+
+if (!function_exists('decrypt')) {
+    function decrypt(string $value)
+    {
+        $decrypted = Hashids::decode($value);
+
+        return $decrypted[0];
     }
 }

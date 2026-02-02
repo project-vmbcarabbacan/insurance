@@ -2,15 +2,19 @@
 
 namespace App\Modules\User\Application\UseCases;
 
+use App\Modules\Role\Application\Exceptions\RoleNotFoundException;
+use App\Modules\Role\Application\Services\RoleService;
 use App\Modules\User\Application\DTOs\UpdateUserDto;
 use App\Modules\User\Application\Exceptions\UserNotFoundException;
 use App\Modules\User\Application\Services\UserService;
 use App\Modules\User\Domain\Entities\UserEntity;
+use App\Shared\Domain\ValueObjects\GenericId;
 
 class UpdateUser
 {
     public function __construct(
-        protected UserService $user_service
+        protected UserService $user_service,
+        protected RoleService $role_service
     ) {}
 
     /**
@@ -34,10 +38,16 @@ class UpdateUser
             throw new UserNotFoundException();
         }
 
+        // Ensure role exists
+        $role = $this->role_service->getRoleBySlug($updateUserDto->role);
+        if (! $role)
+            throw new RoleNotFoundException();
+
         // Create a domain entity containing updated profile data
         $userEntity = new UserEntity(
             name: $updateUserDto->name,
-            email: $updateUserDto->email
+            email: $updateUserDto->email,
+            role_id: GenericId::fromId($role->id),
         );
 
         // Persist profile changes
