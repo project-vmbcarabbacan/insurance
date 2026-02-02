@@ -10,6 +10,12 @@ Route::middleware(['auth:sanctum', 'throttle:30,1'])->prefix('user')->group(func
 
     Route::apiResource('teams', TeamController::class)
         ->only(['index', 'store', 'update'])
+        ->middleware('throttle:120,1');
+
+    Route::get('teams/assign/product/{team}', [TeamController::class, 'getAssignedProduct'])
+        ->middleware('throttle:60,1');
+
+    Route::patch('teams/upsert/product/{team}', [TeamController::class, 'upsertAssignProduct'])
         ->middleware('throttle:60,1');
 
     Route::patch('teams/update/status', [TeamController::class, 'updateStatus'])

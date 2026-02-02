@@ -2,17 +2,21 @@
 
 namespace App\Modules\User\Infrastructure\Http\Controllers;
 
+use App\Modules\Master\Application\Exceptions\InsuranceProductException;
 use App\Modules\User\Application\Services\UserService;
 use App\Modules\User\Application\UseCases\CreateUser;
 use App\Modules\User\Application\UseCases\PaginatedUsers;
+use App\Modules\User\Application\UseCases\ProductAgentAccess;
 use App\Modules\User\Application\UseCases\UpdateUser;
 use App\Modules\User\Application\UseCases\UpdateUserPassword;
 use App\Modules\User\Application\UseCases\UpdateUserStatus;
+use App\Modules\User\Application\UseCases\UpsertAgentProductAssignment;
 use App\Modules\User\Infrastructure\Http\Requests\CreateTeamRequest;
 use App\Modules\User\Infrastructure\Http\Requests\PaginatedUserRequest;
 use App\Modules\User\Infrastructure\Http\Requests\UpdateTeamPasswordRequest;
 use App\Modules\User\Infrastructure\Http\Requests\UpdateTeamRequest;
 use App\Modules\User\Infrastructure\Http\Requests\UpdateTeamStatusRequest;
+use App\Modules\User\Infrastructure\Http\Requests\UuidUserRequest;
 use App\Modules\User\Infrastructure\Http\Resources\TeamResource;
 
 class TeamController
@@ -55,6 +59,35 @@ class TeamController
         return response()->json([
             'message' => 'Team successfully updated'
         ], 200);
+    }
+
+    public function getAssignedProduct(UuidUserRequest $request, ProductAgentAccess $productAgentAccess)
+    {
+        $agentId = $request->agentId();
+
+        $accessed = $productAgentAccess->execute($agentId);
+
+        return response()->json([
+            'message' => 'Team product accessed',
+            'data' => [
+                'accessed' => $accessed
+            ]
+        ]);
+    }
+
+    public function upsertAssignProduct(UuidUserRequest $request, UpsertAgentProductAssignment $upsertAgentProductAssignment)
+    {
+        $agentId = $request->agentId();
+
+        if (empty($request->accessed)) {
+            throw new InsuranceProductException();
+        }
+
+        $upsertAgentProductAssignment->execute($agentId, $request->accessed);
+
+        return response()->json([
+            'message' => 'Team product assignment',
+        ]);
     }
 
     public function updatePassword(UpdateTeamPasswordRequest $request, UpdateUserPassword $updateUserPassword)

@@ -35,7 +35,7 @@ class Role extends Model
 
     public function scopeNoSuperAdmin(Builder $query)
     {
-        return $query->where('slug', '<>', 'super_admin');
+        return $query->whereNotIn('slug', ['super_admin', 'customer']);
     }
 
     /**

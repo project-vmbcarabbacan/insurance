@@ -14,7 +14,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 interface UserRepositoryContract
 {
     public function paginatedUser(PaginatedUserEntity $paginatedUserEntity): ?LengthAwarePaginator;
-    public function createUser(CreateUserEntity $createUserEntity): void;
+    public function createUser(CreateUserEntity $createUserEntity): ?User;
     public function findUserById(GenericId $userId): ?User;
     public function findUserByEmail(Email $email): ?User;
     public function updatePassword(GenericId $userId, Password $password): void;

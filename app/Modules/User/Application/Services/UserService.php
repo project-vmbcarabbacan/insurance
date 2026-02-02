@@ -61,9 +61,9 @@ class UserService
      *
      * @param CreateUserEntity $createUserEntity
      */
-    public function createUser(CreateUserEntity $createUserEntity): void
+    public function createUser(CreateUserEntity $createUserEntity): ?User
     {
-        $this->user_repository_contract->createUser($createUserEntity);
+        return $this->user_repository_contract->createUser($createUserEntity);
     }
 
     /**

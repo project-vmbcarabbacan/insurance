@@ -88,8 +88,9 @@ class UserRepository implements UserRepositoryContract
      *
      * @param CreateUserEntity $createUserEntity
      * @throws DatabaseException if the user cannot be created
+     * @return User model
      */
-    public function createUser(CreateUserEntity $createUserEntity): void
+    public function createUser(CreateUserEntity $createUserEntity): ?User
     {
         try {
             $user = User::create($createUserEntity->toArray());
@@ -101,6 +102,8 @@ class UserRepository implements UserRepositoryContract
                 null,
                 ['status' => 'created']
             );
+
+            return $user;
         } catch (Throwable $e) {
             /* Wrap low-level exception to avoid leaking infrastructure details */
             throw new DatabaseException('Unable to create user', 0, $e);

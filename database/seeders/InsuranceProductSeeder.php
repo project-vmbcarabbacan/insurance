@@ -23,12 +23,12 @@ class InsuranceProductSeeder extends Seeder
         ];
 
         foreach ($product_insurances as $name) {
-            $code = random_string(InsuranceProduct::class, 20, 'code');
+            // $code = random_string(InsuranceProduct::class, 20, 'code');
 
             if (!DB::table('insurance_products')->where('name', $name)->exists()) {
                 DB::table('insurance_products')->insert([
-                    'code' => $code,
-                    'name' => $name,
+                    'code' => $name,
+                    'name' => ucwords($name),
                 ]);
             }
         }

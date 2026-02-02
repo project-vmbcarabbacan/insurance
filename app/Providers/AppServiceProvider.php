@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Modules\Agent\Provider\AgentProductServiceProvider;
 use App\Modules\Authentication\Provider\AuthenticationServiceProvider;
+use App\Modules\Master\Provider\MasterServiceProvider;
 use App\Modules\Role\Provider\RoleServiceProvider;
 use App\Modules\User\Provider\UserServiceProvider;
 use App\Shared\Domain\Enums\MorphType;
@@ -21,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(UserServiceProvider::class);
         $this->app->register(SharedServiceProvider::class);
         $this->app->register(RoleServiceProvider::class);
+        $this->app->register(MasterServiceProvider::class);
+        $this->app->register(AgentProductServiceProvider::class);
     }
 
     /**

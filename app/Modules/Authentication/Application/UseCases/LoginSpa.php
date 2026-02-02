@@ -3,6 +3,7 @@
 namespace App\Modules\Authentication\Application\UseCases;
 
 use App\Modules\Authentication\Application\DTOs\LoginDto;
+use App\Modules\Authentication\Application\Exceptions\AuthenticationNotAuthorizedException;
 use App\Modules\Authentication\Application\Exceptions\AuthenticationStatusNotActiveException;
 use App\Modules\Authentication\Application\Services\AuthenticationService;
 use App\Modules\Authentication\Infrastructure\Http\Requests\LoginRequest;
@@ -64,6 +65,11 @@ class LoginSpa
 
         // Retrieve user by email to record failed login audit if user exists
         $user = $this->user_service->getEmail($login->email);
+
+        // Handle customer trying to login in CRM
+        if ($user->isCustomer()) {
+            throw new AuthenticationNotAuthorizedException();
+        }
 
         // Handle failed authentication
         if (! $authenticated) {

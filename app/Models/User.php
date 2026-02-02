@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Scopes\ExcludeDeletedScope;
 use App\Shared\Domain\Enums\GenericStatus;
+use App\Shared\Domain\Enums\RoleSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -78,7 +79,7 @@ class User extends Authenticatable
     /**
      * Scope to filter by email
      */
-    public function scopeEmail($query, $email)
+    public function scopeEmail(Builder $query, string $email)
     {
         return $query->where('email', $email);
     }
@@ -86,7 +87,7 @@ class User extends Authenticatable
     /**
      * Scope to filter by status 'active'
      */
-    public function scopeActive($query)
+    public function scopeActive(Builder $query)
     {
         return $query->where('status', GenericStatus::ACTIVE->value);
     }
@@ -94,7 +95,7 @@ class User extends Authenticatable
     /**
      * Scope to filter by status 'inactive'
      */
-    public function scopeInactive($query)
+    public function scopeInactive(Builder $query)
     {
         return $query->where('status', GenericStatus::INACTIVE->value);
     }
@@ -102,7 +103,7 @@ class User extends Authenticatable
     /**
      * Scope to filter by status 'suspended'
      */
-    public function scopeSuspended($query)
+    public function scopeSuspended(Builder $query)
     {
         return $query->where('status', GenericStatus::SUSPENDED->value);
     }
@@ -110,7 +111,7 @@ class User extends Authenticatable
     /**
      * Scope to filter by status 'deleted'
      */
-    public function scopeDeleted($query)
+    public function scopeDeleted(Builder $query)
     {
         return $query->withoutGlobalScope(ExcludeDeletedScope::class)->where('status', GenericStatus::DELETED->value);
     }
@@ -205,5 +206,55 @@ class User extends Authenticatable
     public function audits(): MorphMany
     {
         return $this->morphMany(AuditLog::class, 'auditable');
+    }
+
+    public function isSuper(): bool
+    {
+        return $this->role?->name === RoleSlug::SUPER_ADMIN->value;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role?->name === RoleSlug::ADMIN->value;
+    }
+
+    public function isAgent(): bool
+    {
+        return $this->role?->name === RoleSlug::AGENT->value;
+    }
+
+    public function isTeamLead(): bool
+    {
+        return $this->role?->name === RoleSlug::TEAM_LEAD->value;
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role?->name === RoleSlug::CUSTOMER->value;
+    }
+
+    public function isPartner(): bool
+    {
+        return $this->role?->name === RoleSlug::PARTNER->value;
+    }
+
+    public function isUnderwriter(): bool
+    {
+        return $this->role?->name === RoleSlug::UNDERWRITER->value;
+    }
+
+    public function isClaimOfficer(): bool
+    {
+        return $this->role?->name === RoleSlug::CLAIMS_OFFICER->value;
+    }
+
+    public function isFinance(): bool
+    {
+        return $this->role?->name === RoleSlug::FINANCE->value;
+    }
+
+    public function isSupport(): bool
+    {
+        return $this->role?->name === RoleSlug::SUPPORT->value;
     }
 }
