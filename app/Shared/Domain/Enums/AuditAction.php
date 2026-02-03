@@ -51,6 +51,8 @@ enum AuditAction: string
     case PERMISSION_ASSIGNED = 'permission_assigned'; // x
     case PERMISSION_REVOKED = 'permission_revoked'; // x
 
+    case PRODUCT_ASSIGNMENT = 'product_assignment';
+
         /*
     |--------------------------------------------------------------------------
     | Lead Management

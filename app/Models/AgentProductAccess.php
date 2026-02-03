@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class AgentProductAccess extends Model
 {
@@ -31,5 +32,13 @@ class AgentProductAccess extends Model
     public function scopeCode(Builder $query, string $code)
     {
         return $query->where('insurance_product_code', $code);
+    }
+
+    /**
+     * Get all AuditLog attached to this customer.
+     */
+    public function audits(): MorphMany
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Modules\User\Application\UseCases;
 use App\Modules\Agent\Application\Services\AgentProductService;
 use App\Modules\User\Application\Exceptions\UserNotFoundException;
 use App\Modules\User\Application\Services\UserService;
+use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\ValueObjects\GenericId;
 
 class UpsertAgentProductAssignment
@@ -36,6 +37,13 @@ class UpsertAgentProductAssignment
             $data,
             ['agent_id', 'insurance_product_code'],
             ['is_active', 'priority']
+        );
+
+        insurance_audit(
+            $user,
+            AuditAction::PRODUCT_ASSIGNMENT,
+            null,
+            $products
         );
     }
 }
