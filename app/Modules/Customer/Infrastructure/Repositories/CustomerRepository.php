@@ -18,15 +18,23 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class CustomerRepository implements CustomerRepositoryContract
 {
     /**
      * Find customer by ID
      */
-    public function findById(GenericId $customerId): ?Customer
+    public function findById(GenericId $customerId): ?stdClass
     {
-        return Customer::find($customerId->value());
+        // Pivot customer_information for all relevant keys
+        $customerInfo = self::pivotCustomerInformation();
+
+        // Main query
+        $query = self::mainCustomerQuery($customerInfo)
+            ->where('id', $customerId->value());
+
+        return $query->first();
     }
 
     /**
@@ -59,15 +67,13 @@ class CustomerRepository implements CustomerRepositoryContract
      * @throws PhoneNumberExistsException
      * @throws EmailAlreadyExistsException
      */
-    public function createCustomer(CustomerEntity $CustomerEntity): void
+    public function createCustomer(CustomerEntity $CustomerEntity): ?Customer
     {
         /**
          * Persist only non-null entity values
          */
-        $payload = array_filter(
-            $CustomerEntity->toArray(),
-            static fn($value) => ! is_null($value)
-        );
+        $payload = array_non_null_values($CustomerEntity->toArray());
+
 
         $customer = Customer::create($payload);
 
@@ -77,6 +83,24 @@ class CustomerRepository implements CustomerRepositoryContract
             null,
             ['created_at' => Carbon::now()]
         );
+
+        return $customer;
+    }
+
+    public function createCustomerInformation(GenericId $customerId, CustomerEntity $customerEntity): void
+    {
+        $payload = array_non_null_values($customerEntity->toInformation());
+
+        $rows = [];
+        foreach ($payload as $key => $value) {
+            $rows[] = [
+                'customer_id' => $customerId->value(),
+                'meta_key' => $key,
+                'meta_value' => $value,
+            ];
+        }
+
+        DB::table('customer_information')->insert($rows);
     }
 
     /**
@@ -88,7 +112,7 @@ class CustomerRepository implements CustomerRepositoryContract
      */
     public function updateCustomer(GenericId $customerId, CustomerEntity $CustomerEntity): void
     {
-        $customer = $this->findById($customerId);
+        $customer = $this->modelById($customerId);
 
         /**
          * Extract only non-null values
@@ -117,12 +141,50 @@ class CustomerRepository implements CustomerRepositoryContract
         );
     }
 
+    public function updateCustomerInformation(GenericId $customerId, CustomerEntity $customerEntity): void
+    {
+        $customer = $this->modelById($customerId);
+
+        $existingMeta = DB::table('customer_information')
+            ->where('customer_id', $customerId->value())
+            ->pluck('meta_value', 'meta_key')
+            ->toArray();
+
+        $newMeta = array_non_null_values($customerEntity->toInformation());
+
+        foreach ($newMeta as $key => $value) {
+            $existingValue = $existingMeta[$key] ?? null;
+
+            if ($existingValue !== $value) {
+                $oldValue[$key] = $existingValue;
+                $newValue[$key] = $value;
+            }
+
+            DB::table('customer_information')->updateOrInsert(
+                [
+                    'customer_id' => $customerId->value(),
+                    'meta_key' => $key
+                ],
+                [
+                    'meta_value' => $value
+                ]
+            );
+        }
+
+        insurance_audit(
+            $customer,
+            AuditAction::CUSTOMER_UPDATED,
+            $oldValue,
+            $newValue
+        );
+    }
+
     /**
      * Assign a user to a customer
      */
     public function updateUserId(GenericId $customerId, GenericId $userId): void
     {
-        $customer = $this->findById($customerId);
+        $customer = $this->modelById($customerId);
 
         $customer->update([
             'user_id' => $userId->value(),
@@ -143,7 +205,7 @@ class CustomerRepository implements CustomerRepositoryContract
      */
     public function updateCustomerStatus(GenericId $customerId, CustomerStatus $customerStatus): void
     {
-        $customer = $this->findById($customerId);
+        $customer = $this->modelById($customerId);
 
         $oldValues = [
             'status' => $customer->status,
@@ -163,54 +225,85 @@ class CustomerRepository implements CustomerRepositoryContract
 
     public function paginatedCustomer(PaginatedCustomerEntity $entity): ?LengthAwarePaginator
     {
-        $query = DB::table('customers')
-            ->select(
-                'id',
-                'status',
-                'first_name',
-                'last_name',
-                'phone_country_code',
-                'phone_number',
-                'email',
-                'type'
-            );
+        // Pivot customer_information for all relevant keys
+        $customerInfo = self::pivotCustomerInformation();
 
+        // Main query
+        $query = self::mainCustomerQuery($customerInfo);
+
+        // Date filter
         $query->when($entity->dates, function ($q, $dates) {
             [$from, $to] = $dates;
-
-            $q->where('created_at', '>=', $from)
-                ->where('created_at', '<', Carbon::parse($to)->addDay());
+            $q->where('c.created_at', '>=', $from)
+                ->where('c.created_at', '<', Carbon::parse($to)->addDay());
         });
 
+        // Keyword search
         $query->when($entity->keyword, function ($q, $keyword) {
             $keyword = "%{$keyword}%";
-
             $q->where(function ($sub) use ($keyword) {
-                $sub->where('first_name', 'like', $keyword)
-                    ->orWhere('last_name', 'like', $keyword)
-                    ->orWhere('email', 'like', $keyword)
-                    ->orWhere('phone_number', 'like', $keyword)
-                    ->orWhereRaw(
-                        "CONCAT(first_name, ' ', last_name) LIKE ?",
-                        [$keyword]
-                    )
-                    ->orWhereRaw(
-                        "CONCAT(phone_country_code, phone_number) LIKE ?",
-                        [$keyword]
-                    );
+                $sub->where('ci.first_name', 'like', $keyword)
+                    ->orWhere('ci.last_name', 'like', $keyword)
+                    ->orWhere('ci.company_name', 'like', $keyword)
+                    ->orWhere('ci.contact_person', 'like', $keyword)
+                    ->orWhere('c.email', 'like', $keyword)
+                    ->orWhere('c.phone_number', 'like', $keyword)
+                    ->orWhereRaw("CONCAT(ci.first_name, ' ', ci.last_name) LIKE ?", [$keyword])
+                    ->orWhereRaw("CONCAT(ci.company_name, ' ', ci.contact_person) LIKE ?", [$keyword])
+                    ->orWhereRaw("CONCAT(c.phone_country_code, c.phone_number) LIKE ?", [$keyword]);
             });
         });
 
-        $query->when(
-            $entity->status,
-            fn($q, $status) => $q->where('status', $status->value)
-        );
+        // Filter by status
+        $query->when($entity->status, fn($q, $status) => $q->where('c.status', $status->value));
 
-        $query->when(
-            $entity->type,
-            fn($q, $type) => $q->where('type', $type->value)
-        );
+        // Filter by type
+        $query->when($entity->type, fn($q, $type) => $q->where('c.type', $type->value));
 
         return $query->paginate($entity->per_page);
+    }
+
+    private static function pivotCustomerInformation()
+    {
+        return DB::table('customer_information')
+            ->select(
+                'customer_id',
+                DB::raw("MAX(CASE WHEN meta_key = 'first_name' THEN meta_value END) AS first_name"),
+                DB::raw("MAX(CASE WHEN meta_key = 'last_name' THEN meta_value END) AS last_name"),
+                DB::raw("MAX(CASE WHEN meta_key = 'gender' THEN meta_value END) AS gender"),
+                DB::raw("MAX(CASE WHEN meta_key = 'dob' THEN meta_value END) AS dob"),
+                DB::raw("MAX(CASE WHEN meta_key = 'company_name' THEN meta_value END) AS company_name"),
+                DB::raw("MAX(CASE WHEN meta_key = 'contact_person' THEN meta_value END) AS contact_person"),
+                DB::raw("MAX(CASE WHEN meta_key = 'registration_no' THEN meta_value END) AS registration_no"),
+                DB::raw("MAX(CASE WHEN meta_key = 'customer_source' THEN meta_value END) AS customer_source")
+            )
+            ->groupBy('customer_id');
+    }
+
+    private static function mainCustomerQuery($customerInfo)
+    {
+        return DB::table('customers as c')
+            ->leftJoinSub($customerInfo, 'ci', 'ci.customer_id', '=', 'c.id')
+            ->select(
+                'c.id',
+                'c.status',
+                'c.phone_country_code',
+                'c.phone_number',
+                'c.email',
+                'c.type',
+                'ci.first_name',
+                'ci.last_name',
+                'ci.gender',
+                'ci.dob',
+                'ci.company_name',
+                'ci.contact_person',
+                'ci.registration_no',
+                'ci.customer_source'
+            );
+    }
+
+    private function modelById(GenericId $customerId)
+    {
+        return Customer::find($customerId->value());
     }
 }

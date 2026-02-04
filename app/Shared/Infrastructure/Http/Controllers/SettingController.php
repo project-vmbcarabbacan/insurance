@@ -5,8 +5,10 @@ namespace App\Shared\Infrastructure\Http\Controllers;
 use App\Modules\Master\Application\Services\InsuranceProductService;
 use App\Modules\Role\Application\Services\RoleService;
 use App\Shared\Application\Services\MasterService;
+use App\Shared\Domain\Enums\CustomerSource;
 use App\Shared\Domain\Enums\CustomerStatus;
 use App\Shared\Domain\Enums\CustomerType;
+use App\Shared\Domain\Enums\GenderType;
 use App\Shared\Domain\Enums\GenericStatus;
 use App\Shared\Infrastructure\Http\Resources\InsuranceProductResource;
 use App\Shared\Infrastructure\Http\Resources\RoleResource;
@@ -48,9 +50,12 @@ class SettingController
 
     public function manageCustomers(Request $request)
     {
+        $products = $this->insurance_product_service->getAllProduct();
+
         return response()->json([
             'message' => 'Manage customer prerequisites',
             'data' => [
+                'products' => InsuranceProductResource::collection($products),
                 'statuses' => CustomerStatus::toDropdownArray(),
                 'types' => CustomerType::toDropdownArray()
             ]
@@ -66,6 +71,8 @@ class SettingController
             'data' => [
                 'statuses' => CustomerStatus::toDropdownArray(),
                 'types' => CustomerType::toDropdownArray(),
+                'customer_sources' => CustomerSource::toDropdownArray(),
+                'genders' => GenderType::toDropdownArray(),
                 'country_codes' => $countryCodes
             ]
         ]);

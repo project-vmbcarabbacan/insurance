@@ -22,5 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SystemUserSeeder::class);
         $this->call(VehicleMakeSeeder::class);
         $this->call(VehicleModelSeeder::class);
+        $this->call(AgentAssignmentSettingSeeder::class);
+        $this->call(AgentAssignmentQueueSeeder::class);
     }
 }

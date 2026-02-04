@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Shared\Domain\Enums\AssignmentStatus;
 use Illuminate\Database\Eloquent\Model;
 
 class AgentAssignment extends Model
@@ -25,5 +26,6 @@ class AgentAssignment extends Model
         'assigned_at' => 'datetime',
         'contacted_at' => 'datetime',
         'closed_at' => 'datetime',
+        'status' => AssignmentStatus::class
     ];
 }

@@ -49,31 +49,41 @@ class CustomerService
     public function addCustomer(CustomerDto $customerDto)
     {
         $customerEntity = new CustomerEntity(
-            first_name: $customerDto->first_name,
-            last_name: $customerDto->last_name,
+            type: $customerDto->type,
+            customer_source: $customerDto->customer_source,
             phone: $customerDto->phone,
             email: $customerDto->email,
-            type: $customerDto->type,
+            first_name: $customerDto->first_name,
+            last_name: $customerDto->last_name,
             dob: $customerDto->dob,
-            gender: $customerDto->gender
+            gender: $customerDto->gender,
+            company_name: $customerDto->company_name,
+            contact_person: $customerDto->contact_person,
+            registration_no: $customerDto->registration_no
         );
 
-        $this->customer_repository_contract->createCustomer($customerEntity);
+        $customer = $this->customer_repository_contract->createCustomer($customerEntity);
+        $this->customer_repository_contract->createCustomerInformation(GenericId::fromId($customer->id), $customerEntity);
     }
 
     public function updateCustomer(GenericId $customerId, CustomerDto $customerDto)
     {
         $customerEntity = new CustomerEntity(
-            first_name: $customerDto->first_name,
-            last_name: $customerDto->last_name,
+            type: $customerDto->type,
+            customer_source: $customerDto->customer_source,
             phone: $customerDto->phone,
             email: $customerDto->email,
-            type: $customerDto->type,
+            first_name: $customerDto->first_name,
+            last_name: $customerDto->last_name,
             dob: $customerDto->dob,
-            gender: $customerDto->gender
+            gender: $customerDto->gender,
+            company_name: $customerDto->company_name,
+            contact_person: $customerDto->contact_person,
+            registration_no: $customerDto->registration_no
         );
 
         $this->customer_repository_contract->updateCustomer($customerId, $customerEntity);
+        $this->customer_repository_contract->updateCustomerInformation($customerId, $customerEntity);
     }
 
     public function updateUserId(GenericId $customerId, GenericId $userId)

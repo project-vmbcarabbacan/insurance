@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class AgentAssignmentSetting extends Model
@@ -18,4 +19,14 @@ class AgentAssignmentSetting extends Model
         'reassignment_timeout_minutes',
         'is_active',
     ];
+
+    public function scopeCode(Builder $query, string $code)
+    {
+        return $query->where('insurance_product_code', $code);
+    }
+
+    public function scopeActive(Builder $query)
+    {
+        return $query->where('is_active', 1);
+    }
 }

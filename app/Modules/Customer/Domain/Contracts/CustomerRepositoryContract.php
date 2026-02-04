@@ -11,16 +11,19 @@ use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Phone;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use stdClass;
 
 interface CustomerRepositoryContract
 {
     public function paginatedCustomer(PaginatedCustomerEntity $entity): ?LengthAwarePaginator;
-    public function findById(GenericId $customerId): ?Customer;
+    public function findById(GenericId $customerId): ?stdClass;
     public function findByEmail(Email $email): ?Customer;
     public function findByPhone(Phone $phone): ?Customer;
     public function getAllCustomers(): Collection;
-    public function createCustomer(CustomerEntity $CustomerEntity): void;
+    public function createCustomer(CustomerEntity $CustomerEntity): ?Customer;
+    public function createCustomerInformation(GenericId $customerId, CustomerEntity $customerEntity): void;
     public function updateCustomer(GenericId $customerId, CustomerEntity $CustomerEntity): void;
+    public function updateCustomerInformation(GenericId $customerId, CustomerEntity $customerEntity): void;
     public function updateUserId(GenericId $customerId, GenericId $userId): void;
     public function updateCustomerStatus(GenericId $customerId, CustomerStatus $customerStatus): void;
 }

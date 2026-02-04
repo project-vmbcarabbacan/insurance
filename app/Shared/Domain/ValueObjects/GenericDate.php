@@ -70,7 +70,7 @@ final class GenericDate
      */
     public function toString(): string
     {
-        return $this->value->toDateString();
+        return $this->value->format('Y-m-d');
     }
 
     /**
