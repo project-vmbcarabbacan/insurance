@@ -2,6 +2,7 @@
 
 namespace App\Modules\Customer\Application\DTOs;
 
+use App\Shared\Domain\Enums\CustomerType;
 use App\Shared\Domain\Enums\GenderType;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\GenericDate;
@@ -15,6 +16,7 @@ class CustomerDto
         public readonly LowerText $last_name,
         public readonly Phone $phone,
         public readonly Email $email,
+        public readonly CustomerType $type,
         public readonly ?GenericDate $dob,
         public readonly ?GenderType $gender,
     ) {}

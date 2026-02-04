@@ -6,11 +6,13 @@ use App\Modules\Customer\Application\DTOs\CustomerDto;
 use App\Modules\Customer\Application\Exceptions\PhoneNumberExistsException;
 use App\Modules\Customer\Domain\Contracts\CustomerRepositoryContract;
 use App\Modules\Customer\Domain\Entities\CustomerEntity;
+use App\Modules\Customer\Domain\Entities\PaginatedCustomerEntity;
 use App\Modules\User\Application\Exceptions\EmailAlreadyExistsException;
 use App\Shared\Domain\Enums\CustomerStatus;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Phone;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CustomerService
 {
@@ -18,6 +20,11 @@ class CustomerService
     public function __construct(
         protected CustomerRepositoryContract $customer_repository_contract,
     ) {}
+
+    public function getPaginatedCustomer(PaginatedCustomerEntity $entity): LengthAwarePaginator
+    {
+        return $this->customer_repository_contract->paginatedCustomer($entity);
+    }
 
     public function getById(GenericId $customerId)
     {
@@ -46,6 +53,7 @@ class CustomerService
             last_name: $customerDto->last_name,
             phone: $customerDto->phone,
             email: $customerDto->email,
+            type: $customerDto->type,
             dob: $customerDto->dob,
             gender: $customerDto->gender
         );
@@ -60,6 +68,7 @@ class CustomerService
             last_name: $customerDto->last_name,
             phone: $customerDto->phone,
             email: $customerDto->email,
+            type: $customerDto->type,
             dob: $customerDto->dob,
             gender: $customerDto->gender
         );

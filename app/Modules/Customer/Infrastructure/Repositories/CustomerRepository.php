@@ -7,6 +7,7 @@ use App\Modules\Customer\Domain\Contracts\CustomerRepositoryContract;
 use App\Modules\Customer\Domain\Entities\CustomerEntity;
 use App\Modules\Customer\Application\Exceptions\CustomerNotFoundException;
 use App\Modules\Customer\Application\Exceptions\PhoneNumberExistsException;
+use App\Modules\Customer\Domain\Entities\PaginatedCustomerEntity;
 use App\Modules\User\Application\Exceptions\EmailAlreadyExistsException;
 use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\Enums\CustomerStatus;
@@ -15,6 +16,8 @@ use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Phone;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class CustomerRepository implements CustomerRepositoryContract
 {
@@ -156,5 +159,58 @@ class CustomerRepository implements CustomerRepositoryContract
             $oldValues,
             ['status' => $customerStatus->value]
         );
+    }
+
+    public function paginatedCustomer(PaginatedCustomerEntity $entity): ?LengthAwarePaginator
+    {
+        $query = DB::table('customers')
+            ->select(
+                'id',
+                'status',
+                'first_name',
+                'last_name',
+                'phone_country_code',
+                'phone_number',
+                'email',
+                'type'
+            );
+
+        $query->when($entity->dates, function ($q, $dates) {
+            [$from, $to] = $dates;
+
+            $q->where('created_at', '>=', $from)
+                ->where('created_at', '<', Carbon::parse($to)->addDay());
+        });
+
+        $query->when($entity->keyword, function ($q, $keyword) {
+            $keyword = "%{$keyword}%";
+
+            $q->where(function ($sub) use ($keyword) {
+                $sub->where('first_name', 'like', $keyword)
+                    ->orWhere('last_name', 'like', $keyword)
+                    ->orWhere('email', 'like', $keyword)
+                    ->orWhere('phone_number', 'like', $keyword)
+                    ->orWhereRaw(
+                        "CONCAT(first_name, ' ', last_name) LIKE ?",
+                        [$keyword]
+                    )
+                    ->orWhereRaw(
+                        "CONCAT(phone_country_code, phone_number) LIKE ?",
+                        [$keyword]
+                    );
+            });
+        });
+
+        $query->when(
+            $entity->status,
+            fn($q, $status) => $q->where('status', $status->value)
+        );
+
+        $query->when(
+            $entity->type,
+            fn($q, $type) => $q->where('type', $type->value)
+        );
+
+        return $query->paginate($entity->per_page);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Customer\Domain\Entities;
 
+use App\Shared\Domain\Enums\CustomerType;
 use App\Shared\Domain\Enums\GenderType;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\GenericDate;
@@ -15,6 +16,7 @@ class CustomerEntity
         public readonly LowerText $last_name,
         public readonly Phone $phone,
         public readonly Email $email,
+        public readonly CustomerType $type,
         public readonly ?GenericDate $dob,
         public readonly ?GenderType $gender,
     ) {}
@@ -23,12 +25,13 @@ class CustomerEntity
     {
         return [
             'first_name' => $this->first_name->value(),
-            'last_name' => $this->first_name->value(),
+            'last_name' => $this->last_name->value(),
             'dob' => $this->dob->value(),
             'gender' => $this->gender->value,
             'phone_country_code' => $this->phone->countryCode(),
             'phone_number' => $this->phone->phoneNumber(),
             'email' => $this->email->value(),
+            'type' => $this->type->value
         ];
     }
 }

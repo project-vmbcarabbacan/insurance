@@ -4,14 +4,17 @@ namespace  App\Modules\Customer\Domain\Contracts;
 
 use App\Models\Customer;
 use App\Modules\Customer\Domain\Entities\CustomerEntity;
+use App\Modules\Customer\Domain\Entities\PaginatedCustomerEntity;
 use App\Shared\Domain\Enums\CustomerStatus;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Phone;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface CustomerRepositoryContract
 {
+    public function paginatedCustomer(PaginatedCustomerEntity $entity): ?LengthAwarePaginator;
     public function findById(GenericId $customerId): ?Customer;
     public function findByEmail(Email $email): ?Customer;
     public function findByPhone(Phone $phone): ?Customer;

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Shared\Domain\Enums\CustomerStatus;
+use App\Shared\Domain\Enums\CustomerType;
 use App\Shared\Domain\Enums\GenderType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -25,6 +26,7 @@ class Customer extends Model
         'phone_country_code',
         'phone_number',
         'email',
+        'type'
     ];
 
     /**
@@ -36,7 +38,8 @@ class Customer extends Model
     {
         return [
             'status' => CustomerStatus::class,
-            'gender' => GenderType::class
+            'gender' => GenderType::class,
+            'type' => CustomerType::class
         ];
     }
 

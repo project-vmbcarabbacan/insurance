@@ -18,11 +18,11 @@ final class GenericDate
      */
     private function __construct(string|Carbon $date, bool $ensureNotFuture)
     {
+        $this->value = $this->parseDate($date);
+
         if ($ensureNotFuture) {
             $this->ensureNotInFuture();
         }
-
-        $this->value = $this->parseDate($date);
     }
 
     public static function fromString(string|Carbon $date, bool $ensureNotFuture = true)
