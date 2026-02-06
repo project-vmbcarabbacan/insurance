@@ -38,4 +38,35 @@ class LeadMetaService
         $repo = $this->lead_factory->make($type);
         return $repo->getLeadByLeadId($leadId);
     }
+
+    public function leadHealthMetaToArrayColumns(array $metas)
+    {
+        $members = [];
+
+        foreach ($metas as $meta) {
+            // The key looks like "health_member_name_1" or "health_member_dob_2"
+            // Extract suffix number from key using regex
+            if (preg_match('/health_member_(name|dob)_(\d+)$/', $meta->key, $matches)) {
+                $type = $matches[1]; // 'name' or 'dob'
+                $index = $matches[2]; // e.g. '1', '2', '3' as string
+
+                // Initialize if not set
+                if (!isset($members[$index])) {
+                    $members[$index] = ['member_name' => null, 'member_dob' => null];
+                }
+
+                // Assign the value according to type
+                if ($type === 'name') {
+                    $members[$index]['member_name'] = $meta->value;
+                } elseif ($type === 'dob') {
+                    $members[$index]['member_dob'] = $meta->value;
+                }
+            }
+        }
+
+        // Optional: re-index to numeric keys and get array values only
+        $members = array_values($members);
+
+        return $members;
+    }
 }

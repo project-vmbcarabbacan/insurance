@@ -2,6 +2,7 @@
 
 namespace App\Shared\Infrastructure\Routes;
 
+use App\Shared\Infrastructure\Http\Controllers\HealthController;
 use App\Shared\Infrastructure\Http\Controllers\SettingController;
 use App\Shared\Infrastructure\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +39,11 @@ Route::middleware('auth:sanctum')->prefix('setting')->group(function () {
             ->middleware('throttle:60,1');
 
         Route::get('trim/{year}/{make_id}/{model_id}', [VehicleController::class, 'getTrims'])
+            ->middleware('throttle:60,1');
+    });
+
+    Route::prefix('health')->group(function () {
+        Route::get('prerequisites', [HealthController::class, 'leadHealth'])
             ->middleware('throttle:60,1');
     });
 });

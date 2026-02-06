@@ -28,7 +28,6 @@ class UpsertLeadMetaUseCase
             $code = LeadProductType::fromValue($lead->insurance_product_code);
             $this->lead_meta_service->updateMeta($lead, $data, $code);
         } catch (\Exception $e) {
-            \Log::info($e);
             throw new LeadMetaUpsertException();
         }
     }
