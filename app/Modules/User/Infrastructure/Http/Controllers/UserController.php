@@ -17,7 +17,7 @@ class UserController
     {
         return response()->json([
             'message' => 'Current user!',
-            'user' => new CurrentUserResource(auth()->user())
+            'user' => new CurrentUserResource(getAuthenticatedUser())
         ]);
     }
 }

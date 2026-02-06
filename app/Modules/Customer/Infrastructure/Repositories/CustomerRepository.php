@@ -263,27 +263,32 @@ class CustomerRepository implements CustomerRepositoryContract
         return $query->paginate($entity->per_page);
     }
 
+    public function modelById(GenericId $customerId): ?Customer
+    {
+        return Customer::find($customerId->value());
+    }
+
     private static function pivotCustomerInformation()
     {
         return DB::table('customer_information')
             ->select(
                 'customer_id',
-                DB::raw("MAX(CASE WHEN meta_key = 'first_name' THEN meta_value END) AS first_name"),
-                DB::raw("MAX(CASE WHEN meta_key = 'last_name' THEN meta_value END) AS last_name"),
-                DB::raw("MAX(CASE WHEN meta_key = 'gender' THEN meta_value END) AS gender"),
-                DB::raw("MAX(CASE WHEN meta_key = 'dob' THEN meta_value END) AS dob"),
-                DB::raw("MAX(CASE WHEN meta_key = 'company_name' THEN meta_value END) AS company_name"),
-                DB::raw("MAX(CASE WHEN meta_key = 'contact_person' THEN meta_value END) AS contact_person"),
-                DB::raw("MAX(CASE WHEN meta_key = 'registration_no' THEN meta_value END) AS registration_no"),
-                DB::raw("MAX(CASE WHEN meta_key = 'customer_source' THEN meta_value END) AS customer_source")
+                metaKeyValue('first_name'),
+                metaKeyValue('last_name'),
+                metaKeyValue('gender'),
+                metaKeyValue('dob'),
+                metaKeyValue('company_name'),
+                metaKeyValue('contact_person'),
+                metaKeyValue('registration_no'),
+                metaKeyValue('customer_source')
             )
             ->groupBy('customer_id');
     }
 
-    private static function mainCustomerQuery($customerInfo)
+    private static function mainCustomerQuery($pivot)
     {
         return DB::table('customers as c')
-            ->leftJoinSub($customerInfo, 'ci', 'ci.customer_id', '=', 'c.id')
+            ->leftJoinSub($pivot, 'ci', 'ci.customer_id', '=', 'c.id')
             ->select(
                 'c.id',
                 'c.status',
@@ -300,10 +305,5 @@ class CustomerRepository implements CustomerRepositoryContract
                 'ci.registration_no',
                 'ci.customer_source'
             );
-    }
-
-    private function modelById(GenericId $customerId)
-    {
-        return Customer::find($customerId->value());
     }
 }

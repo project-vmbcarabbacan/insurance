@@ -13,6 +13,11 @@ class InsuranceProductRepository implements InsuranceProductRepositoryContract
         return InsuranceProduct::query()->get();
     }
 
+    public function getInsuranceCode(): array
+    {
+        return InsuranceProduct::pluck('code')->toArray();
+    }
+
     public function getInsuranceProductByCode(string $code): InsuranceProduct
     {
         return InsuranceProduct::code($code)->first();

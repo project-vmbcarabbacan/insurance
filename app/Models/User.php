@@ -210,51 +210,51 @@ class User extends Authenticatable
 
     public function isSuper(): bool
     {
-        return $this->role?->name === RoleSlug::SUPER_ADMIN->value;
+        return $this->role?->slug === RoleSlug::SUPER_ADMIN->value;
     }
 
     public function isAdmin(): bool
     {
-        return $this->role?->name === RoleSlug::ADMIN->value;
+        return $this->role?->slug === RoleSlug::ADMIN->value;
     }
 
     public function isAgent(): bool
     {
-        return $this->role?->name === RoleSlug::AGENT->value;
+        return $this->role?->slug === RoleSlug::AGENT->value;
     }
 
     public function isTeamLead(): bool
     {
-        return $this->role?->name === RoleSlug::TEAM_LEAD->value;
+        return $this->role?->slug === RoleSlug::TEAM_LEAD->value;
     }
 
     public function isCustomer(): bool
     {
-        return $this->role?->name === RoleSlug::CUSTOMER->value;
+        return $this->role?->slug === RoleSlug::CUSTOMER->value;
     }
 
     public function isPartner(): bool
     {
-        return $this->role?->name === RoleSlug::PARTNER->value;
+        return $this->role?->slug === RoleSlug::PARTNER->value;
     }
 
     public function isUnderwriter(): bool
     {
-        return $this->role?->name === RoleSlug::UNDERWRITER->value;
+        return $this->role?->slug === RoleSlug::UNDERWRITER->value;
     }
 
     public function isClaimOfficer(): bool
     {
-        return $this->role?->name === RoleSlug::CLAIMS_OFFICER->value;
+        return $this->role?->slug === RoleSlug::CLAIMS_OFFICER->value;
     }
 
     public function isFinance(): bool
     {
-        return $this->role?->name === RoleSlug::FINANCE->value;
+        return $this->role?->slug === RoleSlug::FINANCE->value;
     }
 
     public function isSupport(): bool
     {
-        return $this->role?->name === RoleSlug::SUPPORT->value;
+        return $this->role?->slug === RoleSlug::SUPPORT->value;
     }
 }

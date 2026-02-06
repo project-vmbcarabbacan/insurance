@@ -25,6 +25,12 @@ class VehicleTrim extends Model
         'year',
         'name',
         'description',
-        'msrp'
+        'msrp',
+        'type',
+        'seats',
+        'doors',
+        'engine_type',
+        'fuel_type',
+        'cylinders',
     ];
 }

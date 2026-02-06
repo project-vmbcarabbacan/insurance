@@ -2,36 +2,40 @@
 
 namespace App\Modules\Lead\Application\Services;
 
-use App\Modules\Lead\Application\DTOs\LeadMetaDto;
+use App\Models\Lead;
 use App\Modules\Lead\Domain\Contracts\LeadMetaRepositoryContract;
-use App\Modules\Lead\Domain\Entities\LeadMetaEntity;
+use App\Modules\Lead\Domain\Enums\LeadProductType;
+use App\Modules\Lead\Infrastructure\Factories\LeadFactory;
+use App\Shared\Domain\ValueObjects\GenericId;
 
 class LeadMetaService
 {
 
-    protected function __construct(
-        protected LeadMetaRepositoryContract $lead_meta_repository_contract
+    public function __construct(
+        protected LeadFactory $lead_factory
     ) {}
 
-    public function addMeta(LeadMetaDto $leadMetaDto)
+    public function addMeta(GenericId $leadId, array $data, LeadProductType $type)
     {
-        $entity = new LeadMetaEntity(
-            lead_id: $leadMetaDto->lead_id,
-            key: $leadMetaDto->key,
-            value: $leadMetaDto->value
-        );
-
-        $this->lead_meta_repository_contract->addLeadMeta($entity);
+        $repo = $this->lead_factory->make($type);
+        $repo->addLeadMeta($leadId, $data);
     }
 
-    public function updateMeta(LeadMetaEntity $leadMetaDto)
+    public function updateMeta(Lead $lead, array $data, LeadProductType $type)
     {
-        $entity = new LeadMetaEntity(
-            lead_id: $leadMetaDto->lead_id,
-            key: $leadMetaDto->key,
-            value: $leadMetaDto->value
-        );
+        $repo = $this->lead_factory->make($type);
+        $repo->updateLeadMeta($lead, $data);
+    }
 
-        $this->lead_meta_repository_contract->updateLeadMeta($entity);
+    public function byCustomerId(GenericId $customerId, LeadProductType $type)
+    {
+        $repo = $this->lead_factory->make($type);
+        return $repo->getLeadByCustomerId($customerId);
+    }
+
+    public function byLeadId(GenericId $leadId, LeadProductType $type)
+    {
+        $repo = $this->lead_factory->make($type);
+        return $repo->getLeadByLeadId($leadId);
     }
 }

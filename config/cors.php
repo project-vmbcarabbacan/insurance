@@ -18,6 +18,7 @@ return [
     'paths' => [
         'api/*',
         'customers/*',
+        'lead/*',
         'authentication/*',
         'user/*',
         'setting/*',

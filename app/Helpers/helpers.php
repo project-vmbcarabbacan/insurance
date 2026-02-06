@@ -6,9 +6,11 @@ use App\Models\Quotation;
 use App\Models\Role;
 use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\Enums\RoleSlug;
+use App\Shared\Domain\ValueObjects\GenericId;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Vinkla\Hashids\Facades\Hashids;
 
 if (!function_exists('random_string')) {
@@ -289,5 +291,46 @@ if (!function_exists('decrypt')) {
         $decrypted = Hashids::decode($value);
 
         return $decrypted[0];
+    }
+}
+
+if (!function_exists('getAuthenticatedUser')) {
+    function getAuthenticatedUser()
+    {
+        return auth()->user();
+    }
+}
+
+
+if (!function_exists('getAgentId')) {
+    function getAgentId()
+    {
+        $user = auth()->user();
+        if ($user->isAgent() || $user->isTeamLead()) {
+            return GenericId::fromId($user->id);
+        }
+
+        return null;
+    }
+}
+
+if (!function_exists('getId')) {
+    function getId()
+    {
+        return auth()->id() ?? null;
+    }
+}
+
+if (!function_exists('metaKeyValue')) {
+    function metaKeyValue(string $column)
+    {
+        return DB::raw("MAX(CASE WHEN meta_key = '$column' THEN meta_value END) AS $column");
+    }
+}
+
+if (!function_exists('keyValue')) {
+    function keyValue(string $column)
+    {
+        return DB::raw("MAX(CASE WHEN key = '$column' THEN value END) AS $column");
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Shared\Domain\Enums\LeadSource;
+use App\Shared\Domain\Enums\CustomerSource;
 use App\Shared\Domain\Enums\LeadStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -47,7 +47,7 @@ class Lead extends Model
     protected function casts(): array
     {
         return [
-            'source' => LeadSource::class,
+            'source' => CustomerSource::class,
             'status' => LeadStatus::class,
         ];
     }
@@ -68,7 +68,7 @@ class Lead extends Model
         return $this->morphMany(AuditLog::class, 'auditable');
     }
 
-    public function meta()
+    public function metas()
     {
         return $this->hasMany(LeadMeta::class);
     }

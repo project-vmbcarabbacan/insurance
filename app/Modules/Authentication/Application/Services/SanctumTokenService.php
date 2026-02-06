@@ -38,7 +38,7 @@ class SanctumTokenService
      */
     public function revokeCurrentToken(): void
     {
-        $user = auth()->user();
+        $user = getAuthenticatedUser();
 
         // Early return if no authenticated user
         if (! $user) {
@@ -68,7 +68,7 @@ class SanctumTokenService
      */
     public function revokeAllTokens(): void
     {
-        $user = auth()->user();
+        $user = getAuthenticatedUser();
 
         // Early return if no authenticated user
         if (! $user) {

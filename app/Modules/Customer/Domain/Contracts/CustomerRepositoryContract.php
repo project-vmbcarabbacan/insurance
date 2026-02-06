@@ -26,4 +26,5 @@ interface CustomerRepositoryContract
     public function updateCustomerInformation(GenericId $customerId, CustomerEntity $customerEntity): void;
     public function updateUserId(GenericId $customerId, GenericId $userId): void;
     public function updateCustomerStatus(GenericId $customerId, CustomerStatus $customerStatus): void;
+    public function modelById(GenericId $customerId): ?Customer;
 }

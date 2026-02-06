@@ -18,6 +18,16 @@ class InsuranceProductService
         return $this->insurance_product_repository_contract->insuranceProducts();
     }
 
+    public function getAllProductCode(): array
+    {
+        return $this->insurance_product_repository_contract->getInsuranceCode();
+    }
+
+    public function isValidCode(string $code, array $codes): bool
+    {
+        return in_array($code, $codes);
+    }
+
     public function getProductByCode(string $code): InsuranceProduct
     {
         return $this->insurance_product_repository_contract->getInsuranceProductByCode($code);

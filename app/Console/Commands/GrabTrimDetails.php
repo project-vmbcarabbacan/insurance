@@ -25,10 +25,11 @@ class GrabTrimDetails extends Command
      */
     public function handle(): int
     {
-        $trims = VehicleTrim::query()->select('id', 'reference_id')->where('id', '>', 2130)->get();
+        $trims = VehicleTrim::query()->select('id', 'reference_id')->where('id', '>', 6604)->get();
 
+        $count = 0;
         foreach ($trims as $trim) {
-
+            $count++;
             $response = Http::get(
                 "https://carapi.app/api/trims/v2/{$trim->reference_id}"
             );
@@ -45,7 +46,12 @@ class GrabTrimDetails extends Command
             $this->storeTrimResponse($response);
 
             // ⏱ Rate safety
-            sleep(1);
+            if ($count > 60) {
+                sleep(60);
+                $count = 0;
+            } else {
+                sleep(2);
+            }
         }
 
         $this->info('Car trim fetch completed successfully.');

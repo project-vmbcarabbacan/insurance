@@ -17,6 +17,6 @@ class AddCustomerUsesCase
         $this->customer_service->ensureEmailIsUnique($customerDto->email);
         $this->customer_service->ensurePhoneIsUnique($customerDto->phone);
 
-        $this->customer_service->addCustomer($customerDto);
+        return $this->customer_service->addCustomer($customerDto);
     }
 }

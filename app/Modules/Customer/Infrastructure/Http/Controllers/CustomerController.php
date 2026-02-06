@@ -12,6 +12,8 @@ use App\Modules\Customer\Infrastructure\Http\Requests\UpdateCustomerRequest;
 use App\Modules\Customer\Infrastructure\Http\Requests\UuidCustomerRequest;
 use App\Modules\Customer\Infrastructure\Http\Resources\CustomersResource;
 use App\Modules\Customer\Infrastructure\Http\Resources\CustomerResource;
+use App\Modules\Lead\Application\UseCases\CreateLeadUseCase;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController
 {
@@ -30,11 +32,18 @@ class CustomerController
         ]);
     }
 
-    public function store(CreateCustomerRequest $request, AddCustomerUsesCase $addCustomerUsesCase)
+    public function store(CreateCustomerRequest $request, AddCustomerUsesCase $addCustomerUsesCase, CreateLeadUseCase $createLeadUseCase)
     {
-        $dto = $request->toDTO();
+        DB::transaction(function () use ($request, $addCustomerUsesCase, $createLeadUseCase) {
+            $dto = $request->toDTO();
+            $leadDtos = $request->leadDto();
 
-        $addCustomerUsesCase->execute($dto);
+            $customer = $addCustomerUsesCase->execute($dto);
+
+            foreach ($leadDtos as $lead) {
+                $createLeadUseCase->execute($customer, $lead);
+            }
+        });
 
         return response()->json([
             'message' => 'Customer created'
@@ -43,9 +52,11 @@ class CustomerController
 
     public function update(UpdateCustomerRequest $request, UpdateCustomerUseCase $updateCustomerUseCase)
     {
-        $dto = $request->toDTO();
+        DB::transaction(function () use ($request, $updateCustomerUseCase) {
+            $dto = $request->toDTO();
 
-        $updateCustomerUseCase->execute($request->customerId(), $dto);
+            $updateCustomerUseCase->execute($request->customerId(), $dto);
+        });
 
         return response()->json([
             'message' => 'Customer updated'

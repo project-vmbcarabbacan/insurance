@@ -31,6 +31,11 @@ class CustomerService
         return $this->customer_repository_contract->findById($customerId);
     }
 
+    public function getModelById(GenericId $customerId)
+    {
+        return $this->customer_repository_contract->modelById($customerId);
+    }
+
     public function getByEmail(Email $email)
     {
         return $this->customer_repository_contract->findByEmail($email);
@@ -64,6 +69,8 @@ class CustomerService
 
         $customer = $this->customer_repository_contract->createCustomer($customerEntity);
         $this->customer_repository_contract->createCustomerInformation(GenericId::fromId($customer->id), $customerEntity);
+
+        return $customer;
     }
 
     public function updateCustomer(GenericId $customerId, CustomerDto $customerDto)

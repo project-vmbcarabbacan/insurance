@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Collection;
 interface InsuranceProductRepositoryContract
 {
     public function insuranceProducts(): Collection;
+    public function getInsuranceCode(): array;
     public function getInsuranceProductByCode(string $code): InsuranceProduct;
 }

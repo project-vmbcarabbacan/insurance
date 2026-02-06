@@ -2,14 +2,31 @@
 
 namespace App\Modules\Lead\Infrastructure\repositories;
 
+use App\Models\Lead;
 use App\Models\LeadMeta;
 use App\Modules\Lead\Domain\Contracts\LeadMetaRepositoryContract;
 use App\Modules\Lead\Domain\Entities\LeadMetaEntity;
 use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\ValueObjects\GenericId;
+use Illuminate\Support\Facades\DB;
+use stdClass;
 
-class LeadMetaRepository implements LeadMetaRepositoryContract
+abstract class LeadMetaRepository implements LeadMetaRepositoryContract
 {
+    /**
+     * Get lead by customer ID.
+     * @param GenericId $customerId
+     * @return array
+     */
+    abstract public function getLeadByCustomerId(GenericId $customeriD): array;
+
+    /**
+     * Get lead by lead ID.
+     * @param GenericId $leadId
+     * @return stdClass | null
+     */
+    abstract public function getLeadByLeadId(GenericId $leadId): stdClass | null;
+
     /**
      * Persist a new lead meta record.
      *
@@ -22,9 +39,20 @@ class LeadMetaRepository implements LeadMetaRepositoryContract
      *
      * @return void
      */
-    public function addLeadMeta(LeadMetaEntity $leadMetaEntity): void
+    public function addLeadMeta(GenericId $leadId, array $data): void
     {
-        LeadMeta::create($leadMetaEntity->toArray());
+        $payload = array_non_null_values($data);
+
+        $rows = [];
+        foreach ($payload as $key => $value) {
+            $rows[] = [
+                'lead_id' => $leadId->value(),
+                'key' => $key,
+                'value' => $value,
+            ];
+        }
+
+        DB::table('lead_metas')->insert($rows);
     }
 
     /**
@@ -40,41 +68,41 @@ class LeadMetaRepository implements LeadMetaRepositoryContract
      *
      * @return void
      */
-    public function updateLeadMeta(LeadMetaEntity $leadMetaEntity): void
+    public function updateLeadMeta(Lead $lead, array $data): void
     {
-        // Fetch existing record (if any) to access previous audits
-        $existingLeadMeta = LeadMeta::where(
-            $leadMetaEntity->uniqueCheck()
-        )->first();
+        $leadId = GenericId::fromId($lead->id);
 
-        // Persist changes
-        $leadMeta = LeadMeta::updateOrCreate(
-            $leadMetaEntity->uniqueCheck(),
-            $leadMetaEntity->updateValue()
-        );
+        $existingMeta = DB::table('lead_metas')
+            ->where('lead_id', $leadId->value())
+            ->pluck('value', 'key')
+            ->toArray();
 
-        /**
-         * Audit trail
-         */
-        if ($leadMeta->wasRecentlyCreated) {
-            insurance_audit(
-                $leadMeta,
-                AuditAction::LEAD_META_CREATED,
-                null,
-                null
+        $newMeta = array_non_null_values($data);
+
+        foreach ($newMeta as $key => $value) {
+            $existingValue = $existingMeta[$key] ?? null;
+
+            if ($existingValue !== $value) {
+                $oldValue[$key] = $existingValue;
+                $newValue[$key] = $value;
+            }
+
+            DB::table('lead_metas')->updateOrInsert(
+                [
+                    'lead_id' => $leadId->value(),
+                    'key' => $key
+                ],
+                [
+                    'value' => $value
+                ]
             );
-            return;
+
+            insurance_audit(
+                $lead,
+                AuditAction::LEAD_META_UPDATED,
+                $oldValue,
+                $newValue
+            );
         }
-
-        /**
-         * Updated audit with access to the previous audit record
-         */
-        insurance_audit(
-            $leadMeta,
-            AuditAction::LEAD_META_UPDATED,
-            ['value' => $existingLeadMeta?->value],
-            $leadMeta->getChanges()
-
-        );
     }
 }

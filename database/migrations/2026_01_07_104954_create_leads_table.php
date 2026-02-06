@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('insurance_product_code')->references('code')->on('insurance_products')->cascadeOnDelete();
             $table->string('source', 50);
             $table->string('status', 30)->default('new');
-            $table->foreignId('assigned_agent_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('assigned_agent_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }
