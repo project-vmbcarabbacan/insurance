@@ -46,18 +46,30 @@ class LeadMetaService
         foreach ($metas as $meta) {
             // The key looks like "health_member_name_1" or "health_member_dob_2"
             // Extract suffix number from key using regex
-            if (preg_match('/health_member_(name|dob)_(\d+)$/', $meta->key, $matches)) {
+            if (preg_match('/health_member_(first_name|last_name|gender|relationship|dob)_(\d+)$/', $meta->key, $matches)) {
                 $type = $matches[1]; // 'name' or 'dob'
                 $index = $matches[2]; // e.g. '1', '2', '3' as string
 
                 // Initialize if not set
                 if (!isset($members[$index])) {
-                    $members[$index] = ['member_name' => null, 'member_dob' => null];
+                    $members[$index] = [
+                        'member_first_name' => null,
+                        'member_last_name' => null,
+                        'member_gender' => null,
+                        'member_relationship' => null,
+                        'member_dob' => null
+                    ];
                 }
 
                 // Assign the value according to type
-                if ($type === 'name') {
-                    $members[$index]['member_name'] = $meta->value;
+                if ($type === 'first_name') {
+                    $members[$index]['member_first_name'] = $meta->value;
+                } elseif ($type === 'last_name') {
+                    $members[$index]['member_last_name'] = $meta->value;
+                } elseif ($type === 'gender') {
+                    $members[$index]['member_gender'] = $meta->value;
+                } elseif ($type === 'relationship') {
+                    $members[$index]['member_relationship'] = $meta->value;
                 } elseif ($type === 'dob') {
                     $members[$index]['member_dob'] = $meta->value;
                 }

@@ -8,7 +8,7 @@ use App\Modules\Lead\Application\Services\LeadMetaService;
 use App\Modules\Lead\Domain\Enums\LeadProductType;
 use App\Modules\Master\Application\Services\VehiclePrerequisiteService;
 
-class UpsertLeadMetaUseCase
+class UpsertVehicleLeadMetaUseCase
 {
     public function __construct(
         protected LeadMetaService $lead_meta_service,

@@ -4,18 +4,19 @@ namespace App\Modules\Lead\Infrastructure\Http\Controllers;
 
 use App\Modules\Customer\Application\Services\CustomerService;
 use App\Modules\Lead\Application\UseCases\CreateLeadUseCase;
-use App\Modules\Lead\Application\UseCases\UpsertVehicleLeadMetaUseCase;
-use App\Modules\Lead\Infrastructure\Http\Requests\VehicleUpsertRequest;
+use App\Modules\Lead\Application\UseCases\UpsertHealthLeadMetaUseCase;
+use App\Modules\Lead\Infrastructure\Http\Requests\HealthUpsertRequest;
 use Illuminate\Support\Facades\DB;
 
-class VehicleLeadController
+class HealthLeadController
 {
     public function store(
-        VehicleUpsertRequest $request,
+        HealthUpsertRequest $request,
         CustomerService $customer_service,
         CreateLeadUseCase $create_lead_usecase,
-        UpsertVehicleLeadMetaUseCase $upsert_lead_meta_usecase
+        UpsertHealthLeadMetaUseCase $upsert_lead_meta_usecase
     ) {
+
         try {
             DB::transaction(function () use (
                 $request,
@@ -32,7 +33,7 @@ class VehicleLeadController
             });
 
             return response()->json([
-                'message' => 'Vehicle lead upsert'
+                'message' => 'Health lead upsert'
             ], 201);
         } catch (\Exception $e) {
             \Log::info($e);

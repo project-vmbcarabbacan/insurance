@@ -6,7 +6,7 @@ use App\Shared\Domain\ValueObjects\GenericId;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
-class VehicleLeadMetRepository extends LeadMetaRepository
+class HealthLeadMetaRepository extends LeadMetaRepository
 {
     /**
      * Get lead by customer ID for Vehicle.

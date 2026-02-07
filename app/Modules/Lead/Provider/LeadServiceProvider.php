@@ -8,7 +8,7 @@ use App\Modules\Lead\Domain\Contracts\LeadRepositoryContract;
 use App\Modules\Lead\Infrastructure\repositories\LeadActivityRepository;
 use App\Modules\Lead\Infrastructure\repositories\LeadMetaRepository;
 use App\Modules\Lead\Infrastructure\repositories\LeadRepository;
-use App\Modules\Lead\Infrastructure\repositories\VehicleLeadMetRepository;
+use App\Modules\Lead\Infrastructure\repositories\VehicleLeadMetaRepository;
 use Illuminate\Support\ServiceProvider;
 
 class LeadServiceProvider extends ServiceProvider
@@ -18,7 +18,7 @@ class LeadServiceProvider extends ServiceProvider
         $this->app->bind(LeadRepositoryContract::class, LeadRepository::class);
         $this->app->bind(LeadActivityRepositoryContract::class, LeadActivityRepository::class);
         // $this->app->bind(LeadMetaRepositoryContract::class, LeadMetaRepository::class);
-        $this->app->bind(LeadMetaRepositoryContract::class, VehicleLeadMetRepository::class);
+        $this->app->bind(LeadMetaRepositoryContract::class, VehicleLeadMetaRepository::class);
     }
 
     public function boot()
