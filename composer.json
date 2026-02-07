@@ -32,11 +32,17 @@
             "Database\\Seeders\\": "database/seeders/",
             "App\\Modules\\Authentication\\": "app/Modules/Authentication/",
             "App\\Modules\\Customer\\": "app/Modules/Customer/",
+            "App\\Modules\\Lead\\": "app/Modules/Lead/",
+            "App\\Modules\\Master\\": "app/Modules/Master/",
+            "App\\Modules\\Policy\\": "app/Modules/Policy/",
+            "App\\Modules\\Quotation\\": "app/Modules/Quotation/",
             "App\\Modules\\Role\\": "app/Modules/Role/",
-            "App\\Modules\\User\\": "app/Modules/User/"
+            "App\\Modules\\User\\": "app/Modules/User/",
+            "App\\Shared\\": "app/Shared/"
         },
         "files": [
-            "app/Helpers/helpers.php"
+            "app/Helpers/helpers.php",
+            "app/Helpers/dateHelpers.php"
         ]
     },
     "autoload-dev": {

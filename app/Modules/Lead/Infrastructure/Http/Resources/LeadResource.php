@@ -2,7 +2,6 @@
 
 namespace App\Modules\Lead\Infrastructure\Http\Resources;
 
-use App\Models\InsuranceProduct;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

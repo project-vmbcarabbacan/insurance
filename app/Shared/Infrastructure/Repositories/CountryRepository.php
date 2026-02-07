@@ -88,4 +88,20 @@ final class CountryRepository implements CountryRepositoryContract
             return $countries;
         });
     }
+
+    public function findCountryByValue(string $value): ?array
+    {
+        $value = strtoupper(trim($value));
+
+        return $this->countriesIndexed()[$value] ?? null;
+    }
+
+    private function countriesIndexed(): array
+    {
+        return Cache::rememberForever('countries.select.indexed', function () {
+            return collect($this->countries())
+                ->keyBy('value')
+                ->toArray();
+        });
+    }
 }

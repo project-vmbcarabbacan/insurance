@@ -76,18 +76,59 @@ class LeadRepository implements LeadRepositoryContract
         );
     }
 
-    public function findByCustomerId(GenericId $customerId): Collection
+    // public function findByCustomerId(GenericId $customerId): array
+    // {
+    //     $pivot = DB::table('lead_metas')
+    //         ->select(
+    //             'lead_id',
+    //             DB::raw("MAX(CASE WHEN `key` = 'lead_details' THEN `value` END) AS lead_details"),
+    //         )
+    //         ->groupBy('lead_id');
+
+    //     return DB::table('leads as l')
+    //         ->leftJoinSub($pivot, 'lm', 'lm.lead_id', '=', 'l.id')
+    //         ->select(
+    //             'l.id',
+    //             'l.uuid',
+    //             'l.insurance_product_code',
+    //             'l.status',
+    //             'lm.lead_details',
+    //             'lm.customer_id',
+    //             'lm.due_date'
+    //         )
+    //         ->where('lm.customer_id', $customerId->value())
+    //         ->orderByRaw("
+    //             COALESCE(NULLIF(lm.due_date, ''), '9999-12-31 23:59:59') ASC,
+    //             COALESCE(NULLIF(lm.due_date, 'No Due Date'), '9999-12-31 23:59:59') ASC
+    //         ")
+    //         ->get()
+    //         ->toArray();
+    // }
+
+    public function findByCustomerId(GenericId $customerId): array
     {
-        return Lead::query()
-            ->with('meta')
-            ->whereHas(
-                'meta',
-                fn($q) =>
-                $q->where('key', 'customer_id')
-                    ->where('value', (string) $customerId->value())
+        return DB::table('leads as l')
+            ->leftJoin('lead_metas as lm', function ($join) {
+                $join->on('lm.lead_id', '=', 'l.id')
+                    ->where('lm.key', '=', 'lead_details');
+            })
+            ->select(
+                'l.id',
+                'l.uuid',
+                'l.insurance_product_code',
+                'l.status',
+                'l.due_date',
+                'lm.value as lead_details'
             )
-            ->get();
+            ->where('l.customer_id', $customerId->value())
+            ->orderByRaw("
+                CASE WHEN l.due_date IS NULL THEN 1 ELSE 0 END,
+                l.due_date ASC
+            ")
+            ->get()
+            ->toArray();
     }
+
 
 
     public function findByUuid(Uuid $uuid): ?Lead

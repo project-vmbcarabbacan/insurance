@@ -10,9 +10,12 @@ use App\Modules\Customer\Infrastructure\Http\Requests\CreateCustomerRequest;
 use App\Modules\Customer\Infrastructure\Http\Requests\PaginatedCustomerRequest;
 use App\Modules\Customer\Infrastructure\Http\Requests\UpdateCustomerRequest;
 use App\Modules\Customer\Infrastructure\Http\Requests\UuidCustomerRequest;
+use App\Modules\Customer\Infrastructure\Http\Resources\CustomerDetailResource;
 use App\Modules\Customer\Infrastructure\Http\Resources\CustomersResource;
 use App\Modules\Customer\Infrastructure\Http\Resources\CustomerResource;
+use App\Modules\Lead\Application\Services\LeadService;
 use App\Modules\Lead\Application\UseCases\CreateLeadUseCase;
+use App\Modules\Lead\Infrastructure\Http\Resources\LeadDetailResource;
 use Illuminate\Support\Facades\DB;
 
 class CustomerController
@@ -71,6 +74,20 @@ class CustomerController
             'message' => 'customer by id',
             'data' => [
                 'customer' => new CustomerResource($customer)
+            ]
+        ]);
+    }
+
+    public function details(UuidCustomerRequest $request, CustomerService $customerService, LeadService $leadService)
+    {
+        $customer = $customerService->getById($request->customerId());
+        $leads = $leadService->getLeadsByCustomerId($request->customerId());
+
+        return response()->json([
+            'message' => 'customer by id',
+            'data' => [
+                'customer' => new CustomerDetailResource($customer),
+                'leads' => LeadDetailResource::collection($leads)
             ]
         ]);
     }

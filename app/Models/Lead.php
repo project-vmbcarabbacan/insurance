@@ -16,6 +16,8 @@ class Lead extends Model
      */
     protected $fillable = [
         'uuid',
+        'customer_id',
+        'due_date',
         'insurance_product_code',
         'source',
         'status',

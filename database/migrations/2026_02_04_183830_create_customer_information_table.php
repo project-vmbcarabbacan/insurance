@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('meta_key', 50);
             $table->string('meta_value', 150);
             $table->timestamps();
+
+            $table->unique(['customer_id', 'meta_key']);
+            $table->index(['meta_key', 'meta_value']);
+            $table->index(['customer_id', 'meta_key', 'meta_value']);
         });
 
         Schema::table('customers', function (Blueprint $table) {

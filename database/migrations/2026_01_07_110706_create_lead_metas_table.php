@@ -19,6 +19,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['lead_id', 'key']);
+            $table->index(['key', 'value']);
+            $table->index(['lead_id', 'key', 'value']);
         });
     }
 

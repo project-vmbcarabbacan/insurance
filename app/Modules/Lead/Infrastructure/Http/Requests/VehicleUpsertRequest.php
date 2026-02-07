@@ -11,6 +11,7 @@ use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\Enums\PolicyType;
 use App\Shared\Domain\Enums\SpecificationType;
 use App\Shared\Domain\Enums\YesNo;
+use App\Shared\Domain\ValueObjects\GenericDate;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\LowerText;
 use Illuminate\Foundation\Http\FormRequest;
@@ -96,9 +97,11 @@ class VehicleUpsertRequest extends FormRequest
     public function leadDto(): CreateLeadDto
     {
         return new CreateLeadDto(
+            customer_id: GenericId::fromId($this->customer_id),
             code: LowerText::fromString(LeadProductType::VEHICLE->value),
             source: CustomerSource::fromValue($this->utm_source),
             status: LeadStatus::NEW,
+            due_date: GenericDate::fromString(lead_new_due_date()),
             assigned_agent_id: getAgentId()
         );
     }
@@ -106,7 +109,6 @@ class VehicleUpsertRequest extends FormRequest
     public function arrayData()
     {
         return [
-            'customer_id' => $this->customer_id,
             'vehicle_make_id' => $this->vehicle_make_id,
             'vehicle_year' => $this->vehicle_year,
             'vehicle_model_id' => $this->vehicle_model_id,

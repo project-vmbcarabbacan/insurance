@@ -29,18 +29,17 @@ class CreateLeadUseCase
         $active = $this->lead_service->activeLead($customerId, $code);
         if ($active) return $active;
 
+        $createLeadDto = $createLeadDto->withCustomerId($customerId);
         $lead = $this->lead_service->createLead($createLeadDto);
 
         $leadId = GenericId::fromId($lead->id);
         $data = [
-            'customer_id' => $customer->id
+            'customer_id' => $customerId->value()
         ];
-
-        $this->lead_meta_service->addMeta($leadId, $data, $code);
 
         if (!empty($lead->assigned_agent_id)) return $lead;
 
-
+        $this->lead_meta_service->addMeta($leadId, $data, $code);
         $agentAssignment = $this->agent_assignment_service->assign($leadId, $createLeadDto->code->value(), $createLeadDto->assigned_agent_id);
 
         $agentId = GenericId::fromId($agentAssignment->agent_id);

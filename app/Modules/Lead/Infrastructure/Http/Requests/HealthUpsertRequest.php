@@ -15,6 +15,7 @@ use App\Shared\Domain\Enums\MedicalCondition;
 use App\Shared\Domain\Enums\Relationship;
 use App\Shared\Domain\Enums\Salary;
 use App\Shared\Domain\Enums\YesNo;
+use App\Shared\Domain\ValueObjects\GenericDate;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\LowerText;
 use Illuminate\Foundation\Http\FormRequest;
@@ -171,9 +172,11 @@ class HealthUpsertRequest extends FormRequest
     public function leadDto(): CreateLeadDto
     {
         return new CreateLeadDto(
+            customer_id: GenericId::fromId($this->customer_id),
             code: LowerText::fromString(LeadProductType::HEALTH->value),
             source: CustomerSource::fromValue($this->utm_source),
             status: LeadStatus::NEW,
+            due_date: GenericDate::fromString(lead_new_due_date()),
             assigned_agent_id: getAgentId()
         );
     }
@@ -181,8 +184,6 @@ class HealthUpsertRequest extends FormRequest
     public function arrayData()
     {
         $data = [
-            'customer_id' => $this->customer_id,
-
             'insurance_for' => $this->insurance_for,
             'emirates' => $this->emirates ?? '',
             'nationality' => $this->nationality ?? '',

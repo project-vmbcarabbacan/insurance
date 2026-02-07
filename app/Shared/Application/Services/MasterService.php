@@ -15,8 +15,14 @@ class MasterService
     {
         return $this->country_repository_contract->phoneCountryCodes();
     }
+
     public function countries(): array
     {
         return $this->country_repository_contract->countries();
+    }
+
+    public function findCountryByValue(string $value): array
+    {
+        return $this->country_repository_contract->findCountryByValue($value);
     }
 }

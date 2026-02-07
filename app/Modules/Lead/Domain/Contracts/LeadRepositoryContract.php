@@ -18,6 +18,6 @@ interface LeadRepositoryContract
     public function findLeadById(GenericId $leadId): ?Lead;
     public function updateLeadStatus(Uuid $uuid, LeadStatus $leadStatus): void;
     public function findByUuid(Uuid $uuid): ?Lead;
-    public function findByCustomerId(GenericId $customerId): Collection;
+    public function findByCustomerId(GenericId $customerId): array;
     public function activeLead(GenericId $customerId, LeadProductType $code): ?Lead;
 }

@@ -25,7 +25,7 @@ final class GenericDate
         }
     }
 
-    public static function fromString(string|Carbon $date, bool $ensureNotFuture = true)
+    public static function fromString(string|Carbon $date, bool $ensureNotFuture = false)
     {
         return new self($date, $ensureNotFuture);
     }
@@ -39,10 +39,10 @@ final class GenericDate
     private function parseDate(string|Carbon $date): Carbon
     {
         if ($date instanceof Carbon) {
-            return $date->startOfDay();
+            return $date;
         }
 
-        return Carbon::parse($date)->startOfDay();
+        return Carbon::parse($date);
     }
 
     /**
@@ -66,11 +66,19 @@ final class GenericDate
     }
 
     /**
-     * Get the birth date as a string (Y-m-d).
+     * Get the date as a string (Y-m-d).
      */
     public function toString(): string
     {
         return $this->value->format('Y-m-d');
+    }
+
+    /**
+     * Get the date as a string (Y-m-d H:i:s).
+     */
+    public function toDateTimeString(): string
+    {
+        return $this->value->format('Y-m-d H:i:s');
     }
 
     /**

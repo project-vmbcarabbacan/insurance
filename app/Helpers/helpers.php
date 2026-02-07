@@ -324,13 +324,13 @@ if (!function_exists('getId')) {
 if (!function_exists('metaKeyValue')) {
     function metaKeyValue(string $column)
     {
-        return DB::raw("MAX(CASE WHEN meta_key = '$column' THEN meta_value END) AS $column");
+        return DB::raw("MAX(CASE WHEN `meta_key` = '$column' THEN `meta_value` END) AS $column");
     }
 }
 
 if (!function_exists('keyValue')) {
     function keyValue(string $column)
     {
-        return DB::raw("MAX(CASE WHEN key = '$column' THEN value END) AS $column");
+        return DB::raw("MAX(CASE WHEN `key` = '$column' THEN `value` END) AS $column");
     }
 }

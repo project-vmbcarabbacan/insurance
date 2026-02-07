@@ -25,6 +25,8 @@ class LeadService
             code: $createLeadDto->code,
             source: $createLeadDto->source,
             status: $createLeadDto->status,
+            customer_id: $createLeadDto->customer_id,
+            due_date: $createLeadDto->due_date,
             assigned_agent_id: $createLeadDto->assigned_agent_id
         );
 

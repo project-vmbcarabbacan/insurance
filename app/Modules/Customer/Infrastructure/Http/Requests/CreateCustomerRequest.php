@@ -107,7 +107,7 @@ class CreateCustomerRequest extends FormRequest
             email: Email::fromString($this->email),
             first_name: $this->first_name ? LowerText::fromString($this->first_name) : null,
             last_name: $this->last_name ? LowerText::fromString($this->last_name) : null,
-            dob: $this->dob ? GenericDate::fromString($this->dob) : null,
+            dob: $this->dob ? GenericDate::fromString($this->dob, true) : null,
             gender: $this->gender ? GenderType::fromValue($this->gender) : null,
             company_name: $this->company_name ? LowerText::fromString($this->company_name) : null,
             contact_person: $this->contact_person ? LowerText::fromString($this->contact_person) : null,
@@ -121,7 +121,8 @@ class CreateCustomerRequest extends FormRequest
             return new CreateLeadDto(
                 code: LowerText::fromString($code),
                 source: CustomerSource::fromValue($this->customer_source),
-                status: LeadStatus::NEW, // Assuming LeadStatus::NEW is valid
+                status: LeadStatus::NEW,
+                due_date: GenericDate::fromString(lead_new_due_date()),
                 assigned_agent_id: getAgentId()
             );
         }, array_keys($this->accessed()));

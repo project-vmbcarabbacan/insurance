@@ -18,11 +18,11 @@ enum LeadProductType: string
     public function label(): string
     {
         return match ($this) {
-            self::VEHICLE => 'Vehicle',
-            self::HEALTH => 'Health',
-            self::TRAVEL => 'Travel',
-            self::PET => 'Pet',
-            self::HOME => 'Home',
+            self::VEHICLE => 'Vehicle Insurance',
+            self::HEALTH => 'Health Insurance',
+            self::TRAVEL => 'Travel Insurance',
+            self::PET => 'Pet Insurance',
+            self::HOME => 'Home Insurance',
         };
     }
 

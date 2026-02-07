@@ -16,4 +16,7 @@ Route::middleware(['auth:sanctum'])->prefix('customers')->group(function () {
 
     Route::put('update/{customer}', [CustomerController::class, 'update'])
         ->middleware('throttle:60,1');
+
+    Route::get('details/{customer}', [CustomerController::class, 'details'])
+        ->middleware('throttle:60,1');
 });
