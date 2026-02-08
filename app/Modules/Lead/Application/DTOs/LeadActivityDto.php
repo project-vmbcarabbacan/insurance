@@ -4,12 +4,15 @@ namespace App\Modules\Lead\Application\DTOs;
 
 use App\Shared\Domain\Enums\LeadActivityType;
 use App\Shared\Domain\ValueObjects\GenericId;
+use App\Shared\Domain\ValueObjects\LowerText;
 
 class LeadActivityDto
 {
     public function __construct(
         public readonly GenericId $lead_id,
         public readonly LeadActivityType $type,
-        public readonly string $notes
+        public readonly LowerText $performed_by_name,
+        public readonly ?string $notes = '',
+        public readonly ?GenericId $performed_by_id = null,
     ) {}
 }

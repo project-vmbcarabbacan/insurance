@@ -4,9 +4,15 @@ namespace App\Modules\Lead\Infrastructure\Http\Controllers;
 
 use App\Modules\Customer\Application\Services\CustomerService;
 use App\Modules\Lead\Application\UseCases\CreateLeadUseCase;
+use App\Modules\Lead\Application\UseCases\LeadByUuidUseCase;
 use App\Modules\Lead\Application\UseCases\UpsertVehicleLeadMetaUseCase;
+use App\Modules\Lead\Domain\Maps\LeadKeyMap;
+use App\Modules\Lead\Domain\Maps\LeadViewMap;
+use App\Modules\Lead\Infrastructure\Http\Requests\UuidLeadRequest;
 use App\Modules\Lead\Infrastructure\Http\Requests\VehicleUpsertRequest;
+use App\Modules\Lead\Infrastructure\Http\Resources\VehicleLeadVIewResource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class VehicleLeadController
 {
@@ -35,7 +41,22 @@ class VehicleLeadController
                 'message' => 'Vehicle lead upsert'
             ], 201);
         } catch (\Exception $e) {
-            \Log::info($e);
+            Log::info($e);
         }
+    }
+
+    public function view(
+        UuidLeadRequest $request,
+        LeadByUuidUseCase $leadByUuidUseCase
+    ) {
+        $lead = $leadByUuidUseCase->execute($request->uuid(), LeadKeyMap::viewVehicleLeadById());
+
+        return response()->json([
+            'message' => 'View vehicle lead',
+            'data' => [
+                'lead' => new VehicleLeadVIewResource($lead),
+                'view' => LeadViewMap::VehicleView()
+            ]
+        ]);
     }
 }

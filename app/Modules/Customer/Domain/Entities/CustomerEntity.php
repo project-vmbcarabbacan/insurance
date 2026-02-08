@@ -7,6 +7,7 @@ use App\Shared\Domain\Enums\CustomerType;
 use App\Shared\Domain\Enums\GenderType;
 use App\Shared\Domain\ValueObjects\Email;
 use App\Shared\Domain\ValueObjects\GenericDate;
+use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\LowerText;
 use App\Shared\Domain\ValueObjects\Phone;
 
@@ -23,7 +24,8 @@ class CustomerEntity
         public readonly ?GenderType $gender = null,
         public readonly ?LowerText $company_name = null,
         public readonly ?LowerText $contact_person = null,
-        public readonly ?string $registration_no = null
+        public readonly ?string $registration_no = null,
+        public readonly ?GenericId $customer_id = null
     ) {}
 
     public function toArray()
@@ -54,5 +56,28 @@ class CustomerEntity
             ],
             default => [],
         };
+    }
+
+    public function getCustomerId(): ?GenericId
+    {
+        return $this->customer_id;
+    }
+
+    public function setId(GenericId $customer_id): self
+    {
+        return new self(
+            type: $this->type,
+            customer_source: $this->customer_source,
+            phone: $this->phone,
+            email: $this->email,
+            first_name: $this->first_name,
+            last_name: $this->last_name,
+            dob: $this->dob,
+            gender: $this->gender,
+            company_name: $this->company_name,
+            contact_person: $this->contact_person,
+            registration_no: $this->registration_no,
+            customer_id: $customer_id
+        );
     }
 }

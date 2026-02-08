@@ -4,12 +4,14 @@ namespace App\Modules\Lead\Infrastructure\Http\Requests;
 
 use App\Modules\Lead\Application\DTOs\CreateLeadDto;
 use App\Modules\Lead\Domain\Enums\LeadProductType;
+use App\Modules\Lead\Domain\Maps\LeadActivityDueDateMap;
 use App\Shared\Domain\Enums\CustomerSource;
 use App\Shared\Domain\Enums\Emirates;
 use App\Shared\Domain\Enums\GenderType;
 use App\Shared\Domain\Enums\HealthExistingInsurance;
 use App\Shared\Domain\Enums\HealthInsuranceFor;
 use App\Shared\Domain\Enums\HealthInsureTo;
+use App\Shared\Domain\Enums\LeadActivityType;
 use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\Enums\MedicalCondition;
 use App\Shared\Domain\Enums\Relationship;
@@ -171,12 +173,14 @@ class HealthUpsertRequest extends FormRequest
 
     public function leadDto(): CreateLeadDto
     {
+        $dueAt = now()->add(LeadActivityDueDateMap::dueIn(LeadActivityType::LEAD_CREATED));
+
         return new CreateLeadDto(
             customer_id: GenericId::fromId($this->customer_id),
             code: LowerText::fromString(LeadProductType::HEALTH->value),
             source: CustomerSource::fromValue($this->utm_source),
             status: LeadStatus::NEW,
-            due_date: GenericDate::fromString(lead_new_due_date()),
+            due_date: GenericDate::fromString($dueAt),
             assigned_agent_id: getAgentId()
         );
     }

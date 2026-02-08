@@ -19,3 +19,14 @@ if (!function_exists('format_fe_date_time')) {
         return Carbon::parse($dateTime)->format('d/m/Y h:i a');
     }
 }
+
+if (!function_exists('format_fe_date')) {
+    function format_fe_date(string $dateTime)
+    {
+        if (empty($dateTime)) {
+            return null;
+        }
+
+        return Carbon::parse($dateTime)->format('d/m/Y');
+    }
+}

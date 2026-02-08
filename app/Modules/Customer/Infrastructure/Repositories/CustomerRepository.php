@@ -7,6 +7,7 @@ use App\Modules\Customer\Domain\Contracts\CustomerRepositoryContract;
 use App\Modules\Customer\Domain\Entities\CustomerEntity;
 use App\Modules\Customer\Application\Exceptions\CustomerNotFoundException;
 use App\Modules\Customer\Application\Exceptions\PhoneNumberExistsException;
+use App\Modules\Customer\Domain\Entities\CustomerInformationEntity;
 use App\Modules\Customer\Domain\Entities\PaginatedCustomerEntity;
 use App\Modules\User\Application\Exceptions\EmailAlreadyExistsException;
 use App\Shared\Domain\Enums\AuditAction;
@@ -118,6 +119,44 @@ class CustomerRepository implements CustomerRepositoryContract
          * Extract only non-null values
          */
         $updates = array_non_null_values($CustomerEntity->toArray());
+
+        /**
+         * No changes — avoid unnecessary DB hit
+         */
+        if ($updates === []) {
+            return;
+        }
+
+        /**
+         * Capture original values for audit
+         */
+        $oldValues = array_old_values($customer, $updates);
+
+        $customer->update($updates);
+
+        insurance_audit(
+            $customer,
+            AuditAction::CUSTOMER_UPDATED,
+            $oldValues,
+            $updates
+        );
+    }
+
+    /**
+     * Update customer details
+     *
+     * @throws CustomerNotFoundException
+     * @throws PhoneNumberExistsException
+     * @throws EmailAlreadyExistsException
+     */
+    public function updatePartialCustomer(CustomerInformationEntity $customerInformationEntity): void
+    {
+        $customer = $this->modelById($customerInformationEntity->customerId());
+
+        /**
+         * Extract only non-null values
+         */
+        $updates = array_non_null_values($customerInformationEntity->toArray());
 
         /**
          * No changes — avoid unnecessary DB hit

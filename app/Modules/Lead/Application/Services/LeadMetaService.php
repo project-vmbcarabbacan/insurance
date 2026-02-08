@@ -7,6 +7,7 @@ use App\Modules\Lead\Domain\Contracts\LeadMetaRepositoryContract;
 use App\Modules\Lead\Domain\Enums\LeadProductType;
 use App\Modules\Lead\Infrastructure\Factories\LeadFactory;
 use App\Shared\Domain\ValueObjects\GenericId;
+use App\Shared\Domain\ValueObjects\Uuid;
 
 class LeadMetaService
 {
@@ -27,16 +28,22 @@ class LeadMetaService
         $repo->updateLeadMeta($lead, $data);
     }
 
-    public function byCustomerId(GenericId $customerId, LeadProductType $type)
+    public function byCustomerId(GenericId $customerId, LeadProductType $type, array $map)
     {
         $repo = $this->lead_factory->make($type);
-        return $repo->getLeadByCustomerId($customerId);
+        return $repo->getLeadByCustomerId($customerId, $map);
     }
 
-    public function byLeadId(GenericId $leadId, LeadProductType $type)
+    public function byLeadId(Uuid $uuid, LeadProductType $type, array $map)
     {
         $repo = $this->lead_factory->make($type);
-        return $repo->getLeadByLeadId($leadId);
+        return $repo->getLeadByLeadId($uuid, $map);
+    }
+
+    public function memberKeys(GenericId $leadId, LeadProductType $type)
+    {
+        $repo = $this->lead_factory->make($type);
+        return $repo->getMemberKeys($leadId);
     }
 
     public function leadHealthMetaToArrayColumns(array $metas)

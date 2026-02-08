@@ -8,6 +8,7 @@ use App\Modules\Lead\Domain\Contracts\LeadMetaRepositoryContract;
 use App\Modules\Lead\Domain\Entities\LeadMetaEntity;
 use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\ValueObjects\GenericId;
+use App\Shared\Domain\ValueObjects\Uuid;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
@@ -18,14 +19,20 @@ abstract class LeadMetaRepository implements LeadMetaRepositoryContract
      * @param GenericId $customerId
      * @return array
      */
-    abstract public function getLeadByCustomerId(GenericId $customeriD): array;
+    abstract public function getLeadByCustomerId(GenericId $customerId, array $map): array;
 
     /**
      * Get lead by lead ID.
      * @param GenericId $leadId
      * @return stdClass | null
      */
-    abstract public function getLeadByLeadId(GenericId $leadId): stdClass | null;
+    abstract public function getLeadByLeadId(Uuid $leadUuid, array $map): stdClass | null;
+
+    /**
+     * Get all member keys
+     * @param GenericId $leadId
+     */
+    abstract public function getMemberKeys(GenericId $leadId): array;
 
     /**
      * Persist a new lead meta record.

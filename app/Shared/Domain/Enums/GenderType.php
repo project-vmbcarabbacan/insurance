@@ -11,6 +11,17 @@ enum GenderType: string
 
 
     /**
+     * Get human-readable label for the enum value.
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::MALE => 'Male',
+            self::FEMALE => 'Female',
+        };
+    }
+
+    /**
      * Validate and return GenderType enum from string value.
      *
      * @param string $value
@@ -46,7 +57,7 @@ enum GenderType: string
     {
         return array_map(
             fn(self $case) => [
-                'label' => ucwords(strtolower(str_replace('_', ' ', $case->value))),
+                'label' => $case->label(),
                 'value' => strtolower($case->value)
             ],
             self::cases()

@@ -31,7 +31,8 @@ class CustomerDetailResource extends JsonResource
             'name' => $displayName,
             'initials' => get_initials($displayName),
             'contact_person' => $this->contact_person,
-            'phone' => $this->phone_country_code . $this->phone_number,
+            'phone_country_code' => $this->phone_country_code,
+            'phone_number' => $this->phone_number,
             'email' => $this->email,
             'status' => Str::headline($this->status),
             'type' => Str::headline($this->type)

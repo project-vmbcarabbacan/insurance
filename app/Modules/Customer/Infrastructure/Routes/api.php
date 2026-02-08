@@ -12,10 +12,13 @@ Route::middleware(['auth:sanctum'])->prefix('customers')->group(function () {
         ->middleware('throttle:60,1');
 
     Route::post('store', [CustomerController::class, 'store'])
-        ->middleware('throttle:60,1');
+        ->middleware('throttle:10,1');
 
     Route::put('update/{customer}', [CustomerController::class, 'update'])
-        ->middleware('throttle:60,1');
+        ->middleware('throttle:10,1');
+
+    Route::patch('patch/{customer}', [CustomerController::class, 'patch'])
+        ->middleware('throttle:10,1');
 
     Route::get('details/{customer}', [CustomerController::class, 'details'])
         ->middleware('throttle:60,1');

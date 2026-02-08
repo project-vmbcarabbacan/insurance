@@ -6,10 +6,22 @@ use App\Shared\Domain\Exceptions\InvalidValueException;
 
 enum LeadActivityType: string
 {
-    case CALL = 'call';
-    case EMAIL = 'email';
-    case SMS = 'sms';
-    case WHATSAPP = 'whatsapp';
+    case LEAD_CREATED = 'lead_created';
+    case LEAD_ASSIGNED = 'lead_assigned';
+
+    case FIRST_CONTACT_ATTEMPTED = 'first_contact_attempted';
+    case CONTACTED = 'contacted';
+
+    case QUOTE_REQUESTED = 'quote_requested';
+    case QUOTE_SENT = 'quote_sent';
+
+    case FOLLOW_UP_SCHEDULED = 'follow_up_scheduled';
+
+    case DOCUMENT_REQUESTED = 'document_requested';
+    case DOCUMENT_RECEIVED = 'document_received';
+
+    case LEAD_CLOSED_WON = 'lead_closed_won';
+    case LEAD_CLOSED_LOST = 'lead_closed_lost';
 
     /**
      * Validate and return LeadActivityType enum from string value.

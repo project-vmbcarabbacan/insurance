@@ -3,6 +3,7 @@
 namespace App\Modules\Lead\Infrastructure\repositories;
 
 use App\Shared\Domain\ValueObjects\GenericId;
+use App\Shared\Domain\ValueObjects\Uuid;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
@@ -14,9 +15,9 @@ class HealthLeadMetaRepository extends LeadMetaRepository
      * @param GenericId $customerId
      * @return array
      */
-    public function getLeadByCustomerId(GenericId $customerId): array
+    public function getLeadByCustomerId(GenericId $customerId, array $map): array
     {
-        $pivot = self::pivotQuery();
+        $pivot = self::pivotQuery($map);
 
         $query = self::mainQuery($pivot)
             ->where('customer_id', $customerId->value())
@@ -26,39 +27,43 @@ class HealthLeadMetaRepository extends LeadMetaRepository
         return $query;
     }
 
+    public function getMemberKeys(GenericId $leadId): array
+    {
+        return DB::table('lead_metas')
+            ->select(DB::raw('`key`'))
+            ->where(DB::raw('`key`'), 'LIKE', 'health_member_%')
+            ->where('lead_id', $leadId->value())
+            ->distinct()
+            ->pluck('key')
+            ->all();
+    }
+
     /**
      * Get lead by lead ID for Vehicle.
      *
      * @param GenericId $leadId
      * @return array
      */
-    public function getLeadByLeadId(GenericId $leadId): stdClass | null
+    public function getLeadByLeadId(Uuid $leadUuid, array $map): stdClass | null
     {
         // Implement logic for fetching vehicle leads by lead ID
-        return DB::table('vehicle_leads')
-            ->where('id', $leadId->value())
+        $pivot = self::pivotQuery($map);
+
+        return self::mainQuery($pivot)
+            ->where('uuid', $leadUuid->value())
             ->first();
     }
 
-    private static function pivotQuery()
+    private static function pivotQuery(array $fields = [])
     {
+        $selects = ['lead_id'];
+
+        foreach ($fields as $field) {
+            $selects[] = keyValue($field);
+        }
+
         return DB::table('lead_metas')
-            ->select(
-                'lead_id',
-                keyValue('customer_id'),
-                keyValue('vehicle_make'),
-                keyValue('vehicle_make_id'),
-                keyValue('vehicle_model'),
-                keyValue('vehicle_model_id'),
-                keyValue('vehicle_trim'),
-                keyValue('vehicle_trim_id'),
-                keyValue('vehicle_year'),
-                keyValue('identifier_type'),
-                keyValue('plate_number'),
-                keyValue('engine_number'),
-                keyValue('vehicle_value'),
-                keyValue('lead_description'),
-            )
+            ->select($selects)
             ->groupBy('lead_id');
     }
 
@@ -71,15 +76,9 @@ class HealthLeadMetaRepository extends LeadMetaRepository
                 'l.uuid',
                 'l.insurance_product_code',
                 'l.status',
-                'lm.customer_id',
-                'lm.vehicle_make',
-                'lm.vehicle_model',
-                'lm.vehicle_year',
-                'lm.identifier_type',
-                'lm.plate_number',
-                'lm.engine_number',
-                'lm.vehicle_value',
-                'lm.lead_description',
+                'l.assigned_agent_id',
+                'l.due_date',
+                'lm.*',
                 'u.name as agent_name'
             );
     }

@@ -4,6 +4,7 @@ namespace  App\Modules\Customer\Domain\Contracts;
 
 use App\Models\Customer;
 use App\Modules\Customer\Domain\Entities\CustomerEntity;
+use App\Modules\Customer\Domain\Entities\CustomerInformationEntity;
 use App\Modules\Customer\Domain\Entities\PaginatedCustomerEntity;
 use App\Shared\Domain\Enums\CustomerStatus;
 use App\Shared\Domain\ValueObjects\Email;
@@ -27,4 +28,5 @@ interface CustomerRepositoryContract
     public function updateUserId(GenericId $customerId, GenericId $userId): void;
     public function updateCustomerStatus(GenericId $customerId, CustomerStatus $customerStatus): void;
     public function modelById(GenericId $customerId): ?Customer;
+    public function updatePartialCustomer(CustomerInformationEntity $customerInformationEntity): void;
 }

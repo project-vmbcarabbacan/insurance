@@ -2,10 +2,13 @@
 
 namespace App\Modules\Customer\Application\Services;
 
+use App\Models\Customer;
 use App\Modules\Customer\Application\DTOs\CustomerDto;
+use App\Modules\Customer\Application\DTOs\CustomerInformationDto;
 use App\Modules\Customer\Application\Exceptions\PhoneNumberExistsException;
 use App\Modules\Customer\Domain\Contracts\CustomerRepositoryContract;
 use App\Modules\Customer\Domain\Entities\CustomerEntity;
+use App\Modules\Customer\Domain\Entities\CustomerInformationEntity;
 use App\Modules\Customer\Domain\Entities\PaginatedCustomerEntity;
 use App\Modules\User\Application\Exceptions\EmailAlreadyExistsException;
 use App\Shared\Domain\Enums\CustomerStatus;
@@ -68,9 +71,15 @@ class CustomerService
         );
 
         $customer = $this->customer_repository_contract->createCustomer($customerEntity);
-        $this->customer_repository_contract->createCustomerInformation(GenericId::fromId($customer->id), $customerEntity);
 
-        return $customer;
+        $customerEntityWithId = $customerEntity->setId(GenericId::fromId($customer->id));
+
+        return $customerEntityWithId;
+    }
+
+    public function addCustomerInformation(GenericId $customerId, CustomerEntity $customerEntity)
+    {
+        $this->customer_repository_contract->createCustomerInformation($customerId, $customerEntity);
     }
 
     public function updateCustomer(GenericId $customerId, CustomerDto $customerDto)
@@ -91,6 +100,18 @@ class CustomerService
 
         $this->customer_repository_contract->updateCustomer($customerId, $customerEntity);
         $this->customer_repository_contract->updateCustomerInformation($customerId, $customerEntity);
+    }
+
+    public function updatePartialCustomer(CustomerInformationDto $customerInformationDto)
+    {
+
+        $information = new CustomerInformationEntity(
+            customer_id: $customerInformationDto->customer_id,
+            email: $customerInformationDto->email,
+            phone: $customerInformationDto->phone
+        );
+
+        $this->customer_repository_contract->updatePartialCustomer($information);
     }
 
     public function updateUserId(GenericId $customerId, GenericId $userId)
