@@ -16,9 +16,12 @@ use App\Shared\Infrastructure\Http\Resources\InsuranceProductResource;
 use App\Shared\Infrastructure\Http\Resources\RoleResource;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Controller to manage various application settings
+ * such as roles, products, and customer-related prerequisites.
+ */
 class SettingController
 {
-
     public function __construct(
         protected RoleService $role_service,
         protected InsuranceProductService $insurance_product_service,
@@ -26,6 +29,9 @@ class SettingController
         protected ProductAgentAccess $product_agent_access
     ) {}
 
+    /**
+     * Get prerequisites for managing teams, including roles and status options.
+     */
     public function manageTeams(Request $request)
     {
         $roles = $this->role_service->getAllRoles();
@@ -39,6 +45,9 @@ class SettingController
         ]);
     }
 
+    /**
+     * Get prerequisites for assigning products.
+     */
     public function assignProduct(Request $request)
     {
         $products = $this->insurance_product_service->getAllProduct();
@@ -51,18 +60,14 @@ class SettingController
         ]);
     }
 
+    /**
+     * Get prerequisites for managing customers, including products
+     * that the current agent has access to, and status/type dropdowns.
+     */
     public function manageCustomers(Request $request)
     {
         $products = $this->insurance_product_service->getAllProduct();
-
-        $accessed = $this->getProductAgentAccessed();
-
-        /* filter only products having true */
-        $filtered_products = $products->filter(function ($product) use ($accessed) {
-            return isset($accessed[$product->code]) && $accessed[$product->code] === true;
-        });
-
-        $filtered_products = $filtered_products->values();
+        $filtered_products = $this->filterAccessibleProducts($products);
 
         return response()->json([
             'message' => 'Manage customer prerequisites',
@@ -74,21 +79,19 @@ class SettingController
         ]);
     }
 
+    /**
+     * Get prerequisites for upserting a customer, including country codes,
+     * dropdowns, and default access flags for insurance products.
+     */
     public function upsertCustomer(Request $request)
     {
         $countryCodes = $this->master_service->getPhoneCountryCode();
 
-        $accessed = $this->getProductAgentAccessed();
-
-        /* removed the insurance product having false value */
-        $accessed = array_filter($accessed, function ($value) {
-            return $value === true;
-        });
-
-        /* set the default values to false */
-        foreach ($accessed as $key => $value) {
-            $accessed[$key] = false;
-        }
+        // Set default access to false for all products the agent can access
+        $accessed = array_fill_keys(
+            array_keys(array_filter($this->getProductAgentAccessed(), fn($v) => $v === true)),
+            false
+        );
 
         return response()->json([
             'message' => 'Manage upsert customer prerequisites',
@@ -103,19 +106,54 @@ class SettingController
         ]);
     }
 
+    /**
+     * Get prerequisites for viewing customer details,
+     * including accessible products and country codes.
+     */
+    public function detailCustomer(Request $request)
+    {
+        $countryCodes = $this->master_service->getPhoneCountryCode();
+        $products = $this->insurance_product_service->getAllProduct();
+        $filtered_products = $this->filterAccessibleProducts($products);
+
+        return response()->json([
+            'message' => 'Manage customer detail settings',
+            'data' => [
+                'country_codes' => $countryCodes,
+                'products' => InsuranceProductResource::collection($filtered_products)
+            ]
+        ]);
+    }
+
+    /**
+     * Retrieve products that the authenticated agent has access to.
+     * Admins and super users have access to all products.
+     */
     private function getProductAgentAccessed(): array
     {
         $user = getAuthenticatedUser();
-
         $agentId = GenericId::fromId($user->id);
         $accessed = $this->product_agent_access->execute($agentId);
 
+        // Grant full access for admin/super users
         if ($user->isAdmin() || $user->isSuper()) {
-            foreach ($accessed as $key => $value) {
+            foreach ($accessed as $key => $_) {
                 $accessed[$key] = true;
             }
         }
 
         return $accessed;
+    }
+
+    /**
+     * Filter products based on agent access.
+     */
+    private function filterAccessibleProducts($products)
+    {
+        $accessed = $this->getProductAgentAccessed();
+
+        return $products
+            ->filter(fn($product) => !empty($accessed[$product->code]))
+            ->values();
     }
 }

@@ -98,14 +98,12 @@ class CustomerController
     {
         $customer = $customerService->getById($request->customerId());
         $leads = $leadService->getLeadsByCustomerId($request->customerId());
-        $country_codes = $master_service->getPhoneCountryCode();
 
         return response()->json([
             'message' => 'customer by id',
             'data' => [
                 'customer' => new CustomerDetailResource($customer),
                 'leads' => LeadDetailResource::collection($leads),
-                'country_codes' => $country_codes
             ]
         ]);
     }

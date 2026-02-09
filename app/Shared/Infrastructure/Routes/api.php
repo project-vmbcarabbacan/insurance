@@ -24,6 +24,9 @@ Route::middleware('auth:sanctum')->prefix('setting')->group(function () {
     Route::prefix('customer')->group(function () {
         Route::get('upsert', [SettingController::class, 'upsertCustomer'])
             ->middleware('throttle:60,1');
+
+        Route::get('details', [SettingController::class, 'detailCustomer'])
+            ->middleware('throttle:60,1');
     });
 
 
