@@ -29,6 +29,7 @@ class UpsertVehicleLeadMetaUseCase
 
             $this->lead_meta_service->updateMeta($lead, $data, $code);
         } catch (Throwable $e) {
+            \Log::info($e);
             throw new LeadMetaUpsertException($e);
         }
     }

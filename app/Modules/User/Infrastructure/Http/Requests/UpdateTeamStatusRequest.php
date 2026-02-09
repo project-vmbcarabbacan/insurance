@@ -34,7 +34,7 @@ class UpdateTeamStatusRequest extends FormRequest
                 'string',
                 function ($attribute, $value, $fail) {
                     try {
-                        $id = decrypt($value); // 👈 your decrypt logic
+                        $id = decodedExact($value); // 👈 your decrypt logic
 
                         if (!DB::table('users')->where('id', $id)->exists()) {
                             $fail('The selected user does not exist.');
@@ -51,7 +51,7 @@ class UpdateTeamStatusRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     foreach ($value as $uuid) {
                         try {
-                            $id = decrypt($uuid);
+                            $id = decodedExact($uuid);
 
                             if (!DB::table('users')->where('id', $id)->exists()) {
                                 $fail('One or more users do not exist.');
@@ -78,7 +78,7 @@ class UpdateTeamStatusRequest extends FormRequest
 
             return [
                 new UserStatusDto(
-                    user_id: GenericId::fromId(decrypt($this->input('uuid'))),
+                    user_id: GenericId::fromId(decodedExact($this->input('uuid'))),
                     status: $statusEnum
                 )
             ];
@@ -87,7 +87,7 @@ class UpdateTeamStatusRequest extends FormRequest
         if ($this->filled('uuids')) {
             return collect($this->input('uuids'))
                 ->map(fn($uuid) => new UserStatusDto(
-                    user_id: GenericId::fromId(decrypt($uuid)),
+                    user_id: GenericId::fromId(decodedExact($uuid)),
                     status: $statusEnum
                 ))
                 ->values()

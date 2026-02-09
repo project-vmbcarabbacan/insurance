@@ -27,7 +27,7 @@ class CustomerDetailResource extends JsonResource
         }
 
         return [
-            'uuid' => encrypt($this->id),
+            'uuid' => encodeIdExact($this->id),
             'name' => $displayName,
             'initials' => get_initials($displayName),
             'contact_person' => $this->contact_person,

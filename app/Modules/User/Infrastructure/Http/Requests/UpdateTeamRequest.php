@@ -24,7 +24,7 @@ class UpdateTeamRequest extends FormRequest
     {
         try {
             $this->merge([
-                'user_id' => decrypt($this->route('team'))
+                'user_id' => decodedExact($this->route('team'))
             ]);
         } catch (\Throwable $e) {
             abort(404, 'Invalid team identifier');

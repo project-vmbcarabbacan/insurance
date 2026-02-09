@@ -12,6 +12,7 @@ use App\Modules\Lead\Application\Services\LeadMetaService;
 use App\Modules\Lead\Application\Services\LeadService;
 use App\Modules\Lead\Domain\Enums\LeadProductType;
 use App\Modules\Lead\Domain\Maps\LeadActivityDueDateMap;
+use App\Modules\Lead\Domain\Maps\LeadKeyMap;
 use App\Modules\User\Application\Services\UserService;
 use App\Shared\Domain\Enums\LeadActivityType;
 use App\Shared\Domain\ValueObjects\GenericId;
@@ -27,12 +28,42 @@ class CreateLeadUseCase
         protected UserService $user_service
     ) {}
 
-    public function execute(Customer $customer, CreateLeadDto $createLeadDto)
+    public function execute(Customer $customer, CreateLeadDto $createLeadDto, ?array $condition = [])
     {
         $customerId = GenericId::fromId($customer->id);
         $code = LeadProductType::fromValue($createLeadDto->code->value());
 
-        $active = $this->lead_service->activeLead($customerId, $code);
+        $pivot = $this->lead_meta_service->pivot($code, LeadKeyMap::activeVehicleLead());
+
+        $active = $this->lead_service->activeLead($customerId, $code, $pivot);
+        $needsConditionCheck = !empty($condition); // only consider condition if it's not empty
+
+        if (!$active) {
+            // No active lead found, check with condition if available
+            // $needsConditionCheck is already set, no extra action needed
+        } elseif ($code === LeadProductType::VEHICLE) {
+            if (
+                empty($active->vehicle_make_id) ||
+                empty($active->vehicle_year) ||
+                empty($active->vehicle_model_id) ||
+                empty($active->vehicle_trim_id)
+            ) {
+                // Incomplete vehicle lead, consider it inactive
+                $active = false;
+                $needsConditionCheck = false; // no need to check with condition
+            }
+        } elseif ($code === LeadProductType::HEALTH) {
+            if (empty($active->insurance_for)) {
+                // Incomplete health lead, consider it inactive
+                $active = false;
+                $needsConditionCheck = false; // no need to check with condition
+            }
+        }
+
+        if ($needsConditionCheck) {
+            $active = $this->lead_service->activeLead($customerId, $code, $pivot, $condition);
+        }
+
         if ($active) return $active;
 
         // Create new lead

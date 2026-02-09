@@ -20,7 +20,7 @@ class UuidCustomerRequest extends FormRequest
     {
         try {
             $this->merge([
-                'customer_id' => decrypt($this->route('customer'))
+                'customer_id' => decodedExact($this->route('customer'))
             ]);
         } catch (\Throwable $e) {
             abort(404, 'Invalid customer identifier');

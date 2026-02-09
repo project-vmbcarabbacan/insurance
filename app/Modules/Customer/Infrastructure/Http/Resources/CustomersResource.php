@@ -30,7 +30,7 @@ class CustomersResource extends JsonResource
         }
 
         return [
-            'uuid' => encrypt($this->id),
+            'uuid' => encodeIdExact($this->id),
             'name' => $displayName,
             'phone' => $this->phone_country_code . $this->phone_number,
             'email' => $this->email,

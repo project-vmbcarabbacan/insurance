@@ -42,7 +42,7 @@ class HealthUpsertRequest extends FormRequest
 
         try {
             $this->merge([
-                'customer_id' => decrypt($this->customer_id)
+                'customer_id' => decodedExact($this->customer_id)
             ]);
         } catch (\Throwable $e) {
             abort(404, 'Invalid customer identifier');
@@ -203,6 +203,7 @@ class HealthUpsertRequest extends FormRequest
             'utm_campaign' => $this->utm_campaign ?? '',
             'utm_term' => $this->utm_term ?? '',
             'utm_content' => $this->utm_content ?? '',
+            'member_count' => count($this->members) ?? 0
         ];
 
         $array = $this->flatMMembers($data);
@@ -245,5 +246,12 @@ class HealthUpsertRequest extends FormRequest
     public function customerId(): GenericId
     {
         return GenericId::fromId($this->customer_id);
+    }
+
+    public function activeLeadCondition()
+    {
+        return [
+            'insurance_for' => $this->insurance_for
+        ];
     }
 }

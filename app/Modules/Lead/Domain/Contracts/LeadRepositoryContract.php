@@ -9,7 +9,8 @@ use App\Modules\Lead\Domain\Enums\LeadProductType;
 use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Uuid;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder;
+use stdClass;
 
 interface LeadRepositoryContract
 {
@@ -19,5 +20,5 @@ interface LeadRepositoryContract
     public function updateLeadStatus(Uuid $uuid, LeadStatus $leadStatus): void;
     public function findByUuid(Uuid $uuid): ?Lead;
     public function findByCustomerId(GenericId $customerId): array;
-    public function activeLead(GenericId $customerId, LeadProductType $code): ?Lead;
+    public function activeLead(GenericId $customerId, LeadProductType $code, Builder $pivot, ?array $conditions = []): ?stdClass;
 }

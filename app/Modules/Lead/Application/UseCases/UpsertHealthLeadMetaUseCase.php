@@ -9,6 +9,8 @@ use App\Modules\Lead\Domain\Enums\LeadProductType;
 use App\Shared\Application\Services\MasterService;
 use App\Shared\Domain\Enums\HealthInsuranceFor;
 use App\Shared\Domain\Enums\HealthInsureTo;
+use App\Shared\Domain\ValueObjects\GenericId;
+use App\Shared\Domain\ValueObjects\Uuid;
 
 class UpsertHealthLeadMetaUseCase
 {
@@ -22,10 +24,21 @@ class UpsertHealthLeadMetaUseCase
         try {
             $code = LeadProductType::fromValue($lead->insurance_product_code);
 
-
             $nationality_name = $this->resolveNationalityName($data['nationality'] ?? null);
 
             $data = $this->enrichHealthData($data, $nationality_name);
+
+            $uuid = Uuid::fromString($lead->uuid);
+
+            $leadMeta = $this->lead_meta_service->byLeadId($uuid, $code, ['member_count']);
+
+            /* if member_count does not match with the previous count, Delete all the members */
+            if ((int) $leadMeta->member_count <> $data['member_count']) {
+                $leadId = GenericId::fromId($lead->id);
+                $keys = $this->lead_meta_service->memberKeys($leadId, $code);
+                $this->lead_meta_service->deleteMeta($leadId, $code, $keys);
+            }
+
             $this->lead_meta_service->updateMeta($lead, $data, $code);
         } catch (\Exception $e) {
             throw new LeadMetaUpsertException();

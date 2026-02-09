@@ -15,7 +15,7 @@ class TeamResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'uuid' => encrypt($this->id),
+            'uuid' => encodeIdExact($this->id),
             'name' => $this->name,
             'email' => $this->email,
             'status' => ucfirst($this->status->value),

@@ -11,6 +11,7 @@ use App\Modules\Lead\Domain\Maps\LeadKeyMap;
 use App\Modules\Lead\Domain\Maps\LeadViewMap;
 use App\Modules\Lead\Infrastructure\Http\Requests\HealthUpsertRequest;
 use App\Modules\Lead\Infrastructure\Http\Requests\UuidLeadRequest;
+use App\Modules\Lead\Infrastructure\Http\Resources\HealthLeadUpdateResource;
 use App\Modules\Lead\Infrastructure\Http\Resources\HealthLeadViewResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -35,7 +36,7 @@ class HealthLeadController
                 $data = $request->arrayData();
 
                 $customer = $customer_service->getModelById($request->customerId());
-                $lead = $create_lead_usecase->execute($customer, $dto);
+                $lead = $create_lead_usecase->execute($customer, $dto, $request->activeLeadCondition());
                 $upsert_lead_meta_usecase->execute($lead, $data);
             });
 
@@ -59,6 +60,21 @@ class HealthLeadController
             'data' => [
                 'lead' => new HealthLeadViewResource($lead, $leadMetaService),
                 'view' => LeadViewMap::HealthView()
+            ]
+        ]);
+    }
+
+    public function find(
+        UuidLeadRequest $request,
+        LeadByUuidUseCase $leadByUuidUseCase,
+        LeadMetaService $leadMetaService
+    ) {
+        $lead = $leadByUuidUseCase->execute($request->uuid(), LeadKeyMap::updateHealthByLeadId());
+
+        return response()->json([
+            'message' => 'Find health lead',
+            'data' => [
+                'lead' => new HealthLeadUpdateResource($lead, $leadMetaService),
             ]
         ]);
     }

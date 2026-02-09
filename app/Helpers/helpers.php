@@ -278,19 +278,26 @@ if (!function_exists('get_initials')) {
     }
 }
 
-if (!function_exists('encrypt')) {
-    function encrypt(string | int $value)
+if (!function_exists('encodeIdExact')) {
+    function encodeIdExact(string | int $value)
     {
-        return Hashids::encode($value);
+        // Encode using Hashids with your configured length (20)
+        $hash = Hashids::connection('main')->encode($value);
+
+        // Pad the hash to exactly 20 characters if shorter
+        return str_pad($hash, 20, 'X', STR_PAD_RIGHT);
     }
 }
 
-if (!function_exists('decrypt')) {
-    function decrypt(string $value)
+if (!function_exists('decodedExact')) {
+    function decodedExact(string $value)
     {
-        $decrypted = Hashids::decode($value);
+        // Remove any padding characters if present
+        $hash = rtrim($value, 'X');
 
-        return $decrypted[0];
+        $decoded = Hashids::connection('main')->decode($hash);
+
+        return $decoded[0] ?? null;
     }
 }
 

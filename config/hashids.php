@@ -30,7 +30,7 @@ return [
 
         'main' => [
             'salt' => env('HASHIDS_SALT'),
-            'length' => 16,
+            'length' => 20,
             // 'alphabet' => 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
         ],
 

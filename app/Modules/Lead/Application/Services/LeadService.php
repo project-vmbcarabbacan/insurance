@@ -11,6 +11,7 @@ use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\Exceptions\InsuranceProductNotFoundException;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Uuid;
+use Illuminate\Database\Query\Builder;
 
 class LeadService
 {
@@ -58,8 +59,8 @@ class LeadService
         return $this->lead_repository_contract->findLeadById($id);
     }
 
-    public function activeLead(GenericId $customerId, LeadProductType $code)
+    public function activeLead(GenericId $customerId, LeadProductType $code, Builder $pivot, ?array $conditions = [])
     {
-        return $this->lead_repository_contract->activeLead($customerId, $code);
+        return $this->lead_repository_contract->activeLead($customerId, $code, $pivot, $conditions);
     }
 }

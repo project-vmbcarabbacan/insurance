@@ -15,7 +15,7 @@ class CurrentUserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'uuid' => encrypt($this->id),
+            'uuid' => encodeIdExact($this->id),
             'name' => $this->name,
             'initials' => get_initials($this->name),
             'email' => $this->email,

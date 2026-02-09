@@ -60,25 +60,25 @@ class LeadMetaService
                 // Initialize if not set
                 if (!isset($members[$index])) {
                     $members[$index] = [
-                        'member_first_name' => null,
-                        'member_last_name' => null,
-                        'member_gender' => null,
-                        'member_relationship' => null,
-                        'member_dob' => null
+                        'first_name' => null,
+                        'last_name' => null,
+                        'gender' => null,
+                        'relationship' => null,
+                        'dob' => null
                     ];
                 }
 
                 // Assign the value according to type
                 if ($type === 'first_name') {
-                    $members[$index]['member_first_name'] = $meta->value;
+                    $members[$index]['first_name'] = $meta->value;
                 } elseif ($type === 'last_name') {
-                    $members[$index]['member_last_name'] = $meta->value;
+                    $members[$index]['last_name'] = $meta->value;
                 } elseif ($type === 'gender') {
-                    $members[$index]['member_gender'] = $meta->value;
+                    $members[$index]['gender'] = $meta->value;
                 } elseif ($type === 'relationship') {
-                    $members[$index]['member_relationship'] = $meta->value;
+                    $members[$index]['relationship'] = $meta->value;
                 } elseif ($type === 'dob') {
-                    $members[$index]['member_dob'] = $meta->value;
+                    $members[$index]['dob'] = $meta->value;
                 }
             }
         }
@@ -87,5 +87,17 @@ class LeadMetaService
         $members = array_values($members);
 
         return $members;
+    }
+
+    public function deleteMeta(GenericId $leadId, LeadProductType $type, array $keys)
+    {
+        $repo = $this->lead_factory->make($type);
+        $repo->deleteLeadMeta($leadId, $keys);
+    }
+
+    public function pivot(LeadProductType $type, array $fileds = [])
+    {
+        $repo = $this->lead_factory->make($type);
+        return $repo->pivotQuery($fileds);
     }
 }

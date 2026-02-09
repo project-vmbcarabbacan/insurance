@@ -12,9 +12,9 @@ use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Uuid;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
-use PDO;
+use stdClass;
 
 class LeadRepository implements LeadRepositoryContract
 {
@@ -76,35 +76,6 @@ class LeadRepository implements LeadRepositoryContract
         );
     }
 
-    // public function findByCustomerId(GenericId $customerId): array
-    // {
-    //     $pivot = DB::table('lead_metas')
-    //         ->select(
-    //             'lead_id',
-    //             DB::raw("MAX(CASE WHEN `key` = 'lead_details' THEN `value` END) AS lead_details"),
-    //         )
-    //         ->groupBy('lead_id');
-
-    //     return DB::table('leads as l')
-    //         ->leftJoinSub($pivot, 'lm', 'lm.lead_id', '=', 'l.id')
-    //         ->select(
-    //             'l.id',
-    //             'l.uuid',
-    //             'l.insurance_product_code',
-    //             'l.status',
-    //             'lm.lead_details',
-    //             'lm.customer_id',
-    //             'lm.due_date'
-    //         )
-    //         ->where('lm.customer_id', $customerId->value())
-    //         ->orderByRaw("
-    //             COALESCE(NULLIF(lm.due_date, ''), '9999-12-31 23:59:59') ASC,
-    //             COALESCE(NULLIF(lm.due_date, 'No Due Date'), '9999-12-31 23:59:59') ASC
-    //         ")
-    //         ->get()
-    //         ->toArray();
-    // }
-
     public function findByCustomerId(GenericId $customerId): array
     {
         return DB::table('leads as l')
@@ -130,24 +101,39 @@ class LeadRepository implements LeadRepositoryContract
     }
 
 
-
     public function findByUuid(Uuid $uuid): ?Lead
     {
         return Lead::uuid($uuid->value())->first();
     }
 
-    public function activeLead(GenericId $customerId, LeadProductType $code): ?Lead
+    public function activeLead(GenericId $customerId, LeadProductType $code, Builder $pivot, ?array $conditions = []): ?stdClass
     {
-        return Lead::where('insurance_product_code', $code->value)
-            ->whereIn('status', [
-                LeadStatus::NEW->value,
-                LeadStatus::CONTACTED->value,
-                LeadStatus::QUOTED->value
-            ])
-            ->whereHas('metas', function ($q) use ($customerId) {
-                $q->where('key', 'customer_id')
-                    ->where('value', (string) $customerId->value());
-            })
-            ->first();
+        $activeStatuses = [
+            LeadStatus::NEW->value,
+            LeadStatus::CONTACTED->value,
+            LeadStatus::QUOTED->value,
+        ];
+
+        $query = DB::table('leads as l')
+            ->leftJoinSub($pivot, 'lm', 'lm.lead_id', '=', 'l.id')
+            ->leftJoin('users as u', 'u.id', '=', 'l.assigned_agent_id')
+            ->select(
+                'l.uuid',
+                'l.insurance_product_code',
+                'l.status',
+                'l.assigned_agent_id',
+                'l.due_date',
+                'lm.*',
+                'u.name as agent_name'
+            )
+            ->whereIn('l.status', $activeStatuses)
+            ->where('l.insurance_product_code', $code->value)
+            ->where('lm.customer_id', $customerId->value());
+
+        foreach ($conditions as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        return $query->first();
     }
 }

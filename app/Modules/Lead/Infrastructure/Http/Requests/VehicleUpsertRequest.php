@@ -38,7 +38,7 @@ class VehicleUpsertRequest extends FormRequest
 
         try {
             $this->merge([
-                'customer_id' => decrypt($this->customer_id)
+                'customer_id' => decodedExact($this->customer_id)
             ]);
         } catch (\Throwable $e) {
             abort(404, 'Invalid customer identifier');
@@ -60,6 +60,7 @@ class VehicleUpsertRequest extends FormRequest
             'vehicle_trim_id' => ['required', Rule::exists('vehicle_trims', 'reference_id')],
             'vin' => ['required', 'string', 'max:20'],
             'plate_number' => ['required', 'string', 'max:10'],
+            'engine_number' => ['required', 'string', 'max:50'],
             'vehicle_value' => ['required', 'string', 'max:15'],
             'vehicle_specification' => [
                 'required',
@@ -119,6 +120,7 @@ class VehicleUpsertRequest extends FormRequest
             'vehicle_trim_id' => $this->vehicle_trim_id,
             'vin' => $this->vin,
             'plate_number' => $this->plate_number,
+            'engine_number' => $this->engine_number,
             'vehicle_value' => $this->vehicle_value,
             'vehicle_specification' => $this->vehicle_specification,
             'driver_first_name' => $this->first_name,
@@ -143,5 +145,15 @@ class VehicleUpsertRequest extends FormRequest
     public function customerId(): GenericId
     {
         return GenericId::fromId($this->customer_id);
+    }
+
+    public function activeLeadCondition()
+    {
+        return [
+            'vehicle_make_id' => $this->vehicle_make_id,
+            'vehicle_year' => $this->vehicle_year,
+            'vehicle_model_id' => $this->vehicle_model_id,
+            'vehicle_trim_id' => $this->vehicle_trim_id,
+        ];
     }
 }

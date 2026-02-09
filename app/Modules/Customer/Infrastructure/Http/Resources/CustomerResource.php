@@ -16,7 +16,7 @@ class CustomerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'uuid' => encrypt($this->id),
+            'uuid' => encodeIdExact($this->id),
             'first_name' => Str::of($this->first_name)->lower()->ucfirst(),
             'last_name' => Str::of($this->last_name)->lower()->ucfirst(),
             'customer_source' => $this->customer_source,
