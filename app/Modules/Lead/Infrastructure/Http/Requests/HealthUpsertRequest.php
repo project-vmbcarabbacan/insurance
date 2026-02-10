@@ -173,14 +173,15 @@ class HealthUpsertRequest extends FormRequest
 
     public function leadDto(): CreateLeadDto
     {
-        $dueAt = now()->add(LeadActivityDueDateMap::dueIn(LeadActivityType::LEAD_CREATED));
+        $dues = LeadActivityDueDateMap::dueIn(LeadActivityType::LEAD_CREATED);
+        $dueAt = $dues ? now()->add($dues) : null;
 
         return new CreateLeadDto(
             customer_id: GenericId::fromId($this->customer_id),
             code: LowerText::fromString(LeadProductType::HEALTH->value),
             source: CustomerSource::fromValue($this->utm_source),
             status: LeadStatus::NEW,
-            due_date: GenericDate::fromString($dueAt),
+            due_date: $dueAt ? GenericDate::fromString($dueAt) : null,
             assigned_agent_id: getAgentId()
         );
     }

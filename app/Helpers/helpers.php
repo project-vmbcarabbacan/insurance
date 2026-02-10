@@ -328,6 +328,13 @@ if (!function_exists('getId')) {
     }
 }
 
+if (!function_exists('getName')) {
+    function getName()
+    {
+        return auth()->user() ? auth()->user()->name : 'system';
+    }
+}
+
 if (!function_exists('metaKeyValue')) {
     function metaKeyValue(string $column)
     {

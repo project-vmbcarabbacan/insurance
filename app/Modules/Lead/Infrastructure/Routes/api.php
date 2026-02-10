@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Lead\Infrastructure\Http\Controllers\HealthLeadController;
+use App\Modules\Lead\Infrastructure\Http\Controllers\LeadController;
 use App\Modules\Lead\Infrastructure\Http\Controllers\VehicleLeadController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,4 +26,10 @@ Route::middleware(['auth:sanctum'])->prefix('lead')->group(function () {
         Route::get('find/{lead}', [HealthLeadController::class, 'find'])
             ->middleware('throttle:60,1');
     });
+
+    Route::post('activity/add', [LeadController::class, 'addLeadActivity'])
+        ->middleware('throttle:60,1');
+
+    Route::get('leads/{customer}', [LeadController::class, 'leads'])
+        ->middleware('throttle:60,1');
 });

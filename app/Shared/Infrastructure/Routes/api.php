@@ -29,7 +29,10 @@ Route::middleware('auth:sanctum')->prefix('setting')->group(function () {
             ->middleware('throttle:60,1');
     });
 
-
+    Route::prefix('lead')->group(function () {
+        Route::get('activity/{lead}', [SettingController::class, 'leadActivity'])
+            ->middleware('throttle:60,1');
+    });
 
     Route::prefix('vehicle')->group(function () {
         Route::get('prerequisites', [VehicleController::class, 'leadVehicle'])

@@ -2,15 +2,21 @@
 
 namespace App\Shared\Infrastructure\Http\Controllers;
 
+use App\Modules\Lead\Application\Services\LeadService;
+use App\Modules\Lead\Domain\Maps\LeadActivityResponseMap;
+use App\Modules\Lead\Infrastructure\Http\Requests\UuidLeadRequest;
 use App\Modules\Master\Application\Services\InsuranceProductService;
 use App\Modules\Role\Application\Services\RoleService;
 use App\Modules\User\Application\UseCases\ProductAgentAccess;
 use App\Shared\Application\Services\MasterService;
+use App\Shared\Domain\Enums\CommunicationPreference;
 use App\Shared\Domain\Enums\CustomerSource;
 use App\Shared\Domain\Enums\CustomerStatus;
 use App\Shared\Domain\Enums\CustomerType;
 use App\Shared\Domain\Enums\GenderType;
 use App\Shared\Domain\Enums\GenericStatus;
+use App\Shared\Domain\Enums\LeadActivityResponse;
+use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Infrastructure\Http\Resources\InsuranceProductResource;
 use App\Shared\Infrastructure\Http\Resources\RoleResource;
@@ -26,7 +32,8 @@ class SettingController
         protected RoleService $role_service,
         protected InsuranceProductService $insurance_product_service,
         protected MasterService $master_service,
-        protected ProductAgentAccess $product_agent_access
+        protected ProductAgentAccess $product_agent_access,
+        protected LeadService $lead_service
     ) {}
 
     /**
@@ -120,7 +127,31 @@ class SettingController
             'message' => 'Manage customer detail settings',
             'data' => [
                 'country_codes' => $countryCodes,
-                'products' => InsuranceProductResource::collection($filtered_products)
+                'products' => InsuranceProductResource::collection($filtered_products),
+                'communication_preferences' => CommunicationPreference::toDropdownArray()
+            ]
+        ]);
+    }
+
+    public function leadActivity(UuidLeadRequest $request)
+    {
+        $lead = $this->lead_service->getLeadByUuid($request->uuid());
+
+        $responses = LeadActivityResponseMap::map($lead->status);
+
+        $activityResponses = array_map(
+            fn(LeadActivityResponse $case) => [
+                'label' => ucwords(strtolower(str_replace('_', ' ', $case->value))),
+                'value' => $case->value,
+            ],
+            $responses
+        );
+
+        return response()->json([
+            'message' => 'Manage lead activity',
+            'data' => [
+                'activity_responses' => $activityResponses,
+                'communication_preferences' => CommunicationPreference::toDropdownArray()
             ]
         ]);
     }

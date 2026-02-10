@@ -10,6 +10,7 @@ use App\Modules\Lead\Domain\Entities\LeadEntity;
 use App\Modules\Lead\Domain\Enums\LeadProductType;
 use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\Enums\LeadStatus;
+use App\Shared\Domain\ValueObjects\GenericDate;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Uuid;
 use Illuminate\Database\Query\Builder;
@@ -74,6 +75,15 @@ class LeadRepository implements LeadRepositoryContract
             $oldValues,
             ['status' => $leadStatus->value]
         );
+    }
+
+    public function updateLeadDueDate(Uuid $uuid, ?GenericDate $dueDate): void
+    {
+        $lead = $this->findByUuid($uuid);
+
+        $lead->update([
+            'due_date' => $dueDate ? $dueDate->toDateTimeString() : null
+        ]);
     }
 
     public function findByCustomerId(GenericId $customerId): array

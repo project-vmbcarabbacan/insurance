@@ -12,7 +12,7 @@ class LeadActivityEntity
         protected readonly GenericId $lead_id,
         protected readonly LeadActivityType $type,
         protected readonly LowerText $performed_by_name,
-        protected readonly ?string $notes = '',
+        protected readonly string|array|null $notes = '',
         protected readonly ?GenericId $performed_by_id = null,
     ) {}
 

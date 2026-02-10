@@ -6,7 +6,6 @@ use App\Models\Customer;
 use App\Models\User;
 use App\Modules\Agent\Application\Services\AgentAssignmentService;
 use App\Modules\Lead\Application\DTOs\CreateLeadDto;
-use App\Modules\Lead\Application\DTOs\LeadActivityDto;
 use App\Modules\Lead\Application\Services\LeadActivityService;
 use App\Modules\Lead\Application\Services\LeadMetaService;
 use App\Modules\Lead\Application\Services\LeadService;
@@ -15,7 +14,9 @@ use App\Modules\Lead\Domain\Maps\LeadActivityDueDateMap;
 use App\Modules\Lead\Domain\Maps\LeadKeyMap;
 use App\Modules\User\Application\Services\UserService;
 use App\Shared\Domain\Enums\LeadActivityType;
+use App\Shared\Domain\ValueObjects\GenericDate;
 use App\Shared\Domain\ValueObjects\GenericId;
+use App\Shared\Domain\ValueObjects\Uuid;
 
 class CreateLeadUseCase
 {
@@ -97,8 +98,10 @@ class CreateLeadUseCase
         // Generate lead assigned activity and set due date
         $this->generateLeadAcitivity($leadId, LeadActivityType::LEAD_ASSIGNED, getAuthenticatedUser());
 
-        $lead->due_date = now()->add(LeadActivityDueDateMap::dueIn(LeadActivityType::LEAD_ASSIGNED));
-        $lead->save();
+        $dues = LeadActivityDueDateMap::dueIn(LeadActivityType::LEAD_ASSIGNED);
+        $dueAt = $dues ? now()->add($dues) : null;
+        $uuid = Uuid::fromString($lead->uuid);
+        $this->lead_service->updateDueDate($uuid, $dueAt ? GenericDate::fromString($dueAt) : null);
 
         return $lead;
     }

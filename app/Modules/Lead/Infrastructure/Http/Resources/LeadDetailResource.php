@@ -23,7 +23,7 @@ class LeadDetailResource extends JsonResource
             'uuid' => $this->uuid,
             'product' => $this->insurance_product_code,
             'lead_details' => trim($productLabel . ' - ' . ($this->lead_details ?? '')),
-            'due_date' => format_fe_date_time($this->due_date) ?? 'No Due Date',
+            'due_date' => $this->due_date ? format_fe_date_time($this->due_date) : 'No Due Date',
             'status' => $this->status
         ];
     }

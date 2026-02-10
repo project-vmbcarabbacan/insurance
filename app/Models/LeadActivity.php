@@ -29,6 +29,7 @@ class LeadActivity extends Model
     {
         return [
             'type' => LeadActivityType::class,
+            'notes' => 'array'
         ];
     }
 

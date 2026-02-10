@@ -94,7 +94,7 @@ class CustomerController
         ]);
     }
 
-    public function details(UuidCustomerRequest $request, CustomerService $customerService, LeadService $leadService, MasterService $master_service)
+    public function details(UuidCustomerRequest $request, CustomerService $customerService, LeadService $leadService)
     {
         $customer = $customerService->getById($request->customerId());
         $leads = $leadService->getLeadsByCustomerId($request->customerId());
