@@ -27,8 +27,13 @@ Route::middleware(['auth:sanctum'])->prefix('lead')->group(function () {
             ->middleware('throttle:60,1');
     });
 
-    Route::post('activity/add', [LeadController::class, 'addLeadActivity'])
-        ->middleware('throttle:60,1');
+    Route::prefix('activity')->group(function () {
+        Route::post('add', [LeadController::class, 'addLeadActivity'])
+            ->middleware('throttle:60,1');
+
+        Route::get('{lead}', [LeadController::class, 'getLeadActivity'])
+            ->middleware('throttle:60,1');
+    });
 
     Route::get('leads/{customer}', [LeadController::class, 'leads'])
         ->middleware('throttle:60,1');

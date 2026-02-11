@@ -5,10 +5,14 @@ namespace App\Modules\Lead\Infrastructure\Http\Controllers;
 use App\Modules\Customer\Infrastructure\Http\Requests\UuidCustomerRequest;
 use App\Modules\Lead\Application\DTOs\LeadActivityDto;
 use App\Modules\Lead\Application\Exceptions\LeadUuidNotFoundException;
+use App\Modules\Lead\Application\Services\LeadActivityService;
 use App\Modules\Lead\Application\Services\LeadService;
 use App\Modules\Lead\Application\UseCases\AddLeadActivityUseCase;
 use App\Modules\Lead\Domain\Maps\LeadActivityTypeMap;
 use App\Modules\Lead\Infrastructure\Http\Requests\LeadActivityRequest;
+use App\Modules\Lead\Infrastructure\Http\Requests\UuidCustomerLeadsRequest;
+use App\Modules\Lead\Infrastructure\Http\Requests\UuidLeadRequest;
+use App\Modules\Lead\Infrastructure\Http\Resources\LeadActivityResource;
 use App\Modules\Lead\Infrastructure\Http\Resources\LeadDetailResource;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\LowerText;
@@ -41,14 +45,36 @@ class LeadController
         ], 201);
     }
 
-    public function leads(UuidCustomerRequest $request, LeadService $leadService)
+    public function leads(UuidCustomerLeadsRequest $request, LeadService $leadService)
     {
-        $leads = $leadService->getLeadsByCustomerId($request->customerId());
+        $leads = $leadService->getLeadsByCustomerId(
+            $request->customerId(),
+            $request->keyword(),
+            $request->per_page()
+        );
+
+        $leads->through(fn($lead) => new LeadDetailResource($lead));
 
         return response()->json([
             'message' => 'leads by customer id',
             'data' => [
-                'leads' => LeadDetailResource::collection($leads),
+                'leads' => $leads,
+            ]
+        ]);
+    }
+
+    public function getLeadActivity(UuidLeadRequest $request, LeadService $leadService, LeadActivityService $leadActivityService)
+    {
+        $lead = $leadService->getLeadByUuid($request->uuid());
+
+        if (!$lead) throw new LeadUuidNotFoundException();
+
+        $activities = $leadActivityService->getAllActivityByLeadId(GenericId::fromId($lead->id));
+
+        return response()->json([
+            'message' => 'Lead activity',
+            'data' => [
+                'activities' => LeadActivityResource::collection($activities)
             ]
         ]);
     }

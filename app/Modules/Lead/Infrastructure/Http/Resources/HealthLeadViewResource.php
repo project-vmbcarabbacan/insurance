@@ -9,6 +9,7 @@ use App\Shared\Domain\Enums\GenderType;
 use App\Shared\Domain\Enums\HealthExistingInsurance;
 use App\Shared\Domain\Enums\HealthInsuranceFor;
 use App\Shared\Domain\Enums\HealthInsureTo;
+use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\Enums\MedicalCondition;
 use App\Shared\Domain\Enums\Salary;
 use App\Shared\Domain\Enums\YesNo;
@@ -58,11 +59,14 @@ class HealthLeadViewResource extends JsonResource
                 ->all()
         );
 
+        $leadStatus = LeadStatus::fromValue($leadArray['status']);
+
         return [
             'product' => $leadArray['insurance_product_code'] ?? null,
             'lead_details' => trim(($enumValues['insurance_product_code'] ?? '') . ' - ' . ($leadArray['lead_details'] ?? '')),
-            'due_date' => format_fe_date_time($leadArray['due_date'] ?? null) ?? 'No Due Date',
+            'due_date' => $leadArray['due_date'] ? format_fe_date_time($leadArray['due_date']) : 'No Due Date',
             'status' => $leadArray['status'] ?? null,
+            'status_name' => $leadStatus->label() ?? null,
             'insurance_for' => $enumValues['insurance_for'] ?? null,
             'emirates' => $enumValues['emirates'] ?? null,
             'nationality' => $leadArray['nationality_name'] ?? null,

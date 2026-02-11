@@ -11,6 +11,7 @@ use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\Exceptions\InsuranceProductNotFoundException;
 use App\Shared\Domain\ValueObjects\GenericDate;
 use App\Shared\Domain\ValueObjects\GenericId;
+use App\Shared\Domain\ValueObjects\LowerText;
 use App\Shared\Domain\ValueObjects\Uuid;
 use Illuminate\Database\Query\Builder;
 
@@ -50,9 +51,9 @@ class LeadService
         $this->lead_repository_contract->updateLeadDueDate($uuid, $dueDate);
     }
 
-    public function getLeadsByCustomerId(GenericId $customerId)
+    public function getLeadsByCustomerId(GenericId $customerId, ?LowerText $keyword = null, int $per_page = 4)
     {
-        return $this->lead_repository_contract->findByCustomerId($customerId);
+        return $this->lead_repository_contract->findByCustomerId($customerId, $keyword, $per_page);
     }
 
     public function getLeadByUuid(Uuid $uuid)

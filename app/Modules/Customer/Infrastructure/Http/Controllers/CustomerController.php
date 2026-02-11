@@ -98,12 +98,13 @@ class CustomerController
     {
         $customer = $customerService->getById($request->customerId());
         $leads = $leadService->getLeadsByCustomerId($request->customerId());
+        $leads->through(fn($lead) => new LeadDetailResource($lead));
 
         return response()->json([
             'message' => 'customer by id',
             'data' => [
                 'customer' => new CustomerDetailResource($customer),
-                'leads' => LeadDetailResource::collection($leads),
+                'leads' => $leads,
             ]
         ]);
     }

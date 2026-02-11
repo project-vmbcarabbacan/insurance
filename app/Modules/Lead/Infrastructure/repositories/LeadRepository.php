@@ -12,8 +12,10 @@ use App\Shared\Domain\Enums\AuditAction;
 use App\Shared\Domain\Enums\LeadStatus;
 use App\Shared\Domain\ValueObjects\GenericDate;
 use App\Shared\Domain\ValueObjects\GenericId;
+use App\Shared\Domain\ValueObjects\LowerText;
 use App\Shared\Domain\ValueObjects\Uuid;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
@@ -86,9 +88,9 @@ class LeadRepository implements LeadRepositoryContract
         ]);
     }
 
-    public function findByCustomerId(GenericId $customerId): array
+    public function findByCustomerId(GenericId $customerId, ?LowerText $keyword = null, ?int $per_page = 4): ?LengthAwarePaginator
     {
-        return DB::table('leads as l')
+        $query = DB::table('leads as l')
             ->leftJoin('lead_metas as lm', function ($join) {
                 $join->on('lm.lead_id', '=', 'l.id')
                     ->where('lm.key', '=', 'lead_details');
@@ -101,13 +103,19 @@ class LeadRepository implements LeadRepositoryContract
                 'l.due_date',
                 'lm.value as lead_details'
             )
-            ->where('l.customer_id', $customerId->value())
-            ->orderByRaw("
+            ->where('l.customer_id', $customerId->value());
+
+        if ($keyword && $keyword->value()) {
+            $query->whereRaw('LOWER(lm.value) LIKE ?', [
+                '%' . strtolower($keyword->value()) . '%'
+            ]);
+        }
+
+        return $query->orderByRaw("
                 CASE WHEN l.due_date IS NULL THEN 1 ELSE 0 END,
                 l.due_date ASC
             ")
-            ->get()
-            ->toArray();
+            ->paginate($per_page);
     }
 
 

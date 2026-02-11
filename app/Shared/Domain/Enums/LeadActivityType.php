@@ -23,6 +23,41 @@ enum LeadActivityType: string
     case LEAD_CLOSED_WON = 'lead_closed_won';
     case LEAD_CLOSED_LOST = 'lead_closed_lost';
 
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::LEAD_CREATED => 'Lead Created',
+            self::LEAD_ASSIGNED => 'Lead Assigned',
+            self::FIRST_CONTACT_ATTEMPTED => 'First Contact Attempted',
+            self::CONTACTED => 'Contacted',
+            self::QUOTE_REQUESTED => 'Quote Requested',
+            self::QUOTE_SENT => 'Quote Sent',
+            self::FOLLOW_UP_SCHEDULED => 'Follow Up Scheduled',
+            self::DOCUMENT_REQUESTED => 'Document Requested',
+            self::DOCUMENT_RECEIVED => 'Document Received',
+            self::LEAD_CLOSED_WON => 'Lead Closed Won',
+            self::LEAD_CLOSED_LOST => 'Lead Closed Lost',
+        };
+    }
+
+    public function icon(): string
+    {
+        return match ($this) {
+            self::LEAD_CREATED => 'UserPlus',
+            self::LEAD_ASSIGNED => 'UserCheck',
+            self::FIRST_CONTACT_ATTEMPTED => 'PhoneCall',
+            self::CONTACTED => 'Phone',
+            self::QUOTE_REQUESTED => 'FileQuestion',
+            self::QUOTE_SENT => 'Send',
+            self::FOLLOW_UP_SCHEDULED => 'CalendarClock',
+            self::DOCUMENT_REQUESTED => 'FileText',
+            self::DOCUMENT_RECEIVED => 'FileCheck',
+            self::LEAD_CLOSED_WON => 'BadgeCheck',
+            self::LEAD_CLOSED_LOST => 'BadgeX',
+        };
+    }
+
     /**
      * Validate and return LeadActivityType enum from string value.
      *

@@ -8,6 +8,7 @@ use App\Modules\Lead\Domain\Enums\LeadProductType;
 use App\Modules\Lead\Infrastructure\Factories\LeadFactory;
 use App\Shared\Domain\ValueObjects\GenericId;
 use App\Shared\Domain\ValueObjects\Uuid;
+use Illuminate\Support\Str;
 
 class LeadMetaService
 {
@@ -70,15 +71,15 @@ class LeadMetaService
 
                 // Assign the value according to type
                 if ($type === 'first_name') {
-                    $members[$index]['first_name'] = $meta->value;
+                    $members[$index]['first_name'] =  $meta->value ? Str::headline($meta->value) : $meta->value;
                 } elseif ($type === 'last_name') {
-                    $members[$index]['last_name'] = $meta->value;
+                    $members[$index]['last_name'] =  $meta->value ? Str::headline($meta->value) : $meta->value;
                 } elseif ($type === 'gender') {
-                    $members[$index]['gender'] = $meta->value;
+                    $members[$index]['gender'] =  $meta->value ? Str::headline($meta->value) : $meta->value;
                 } elseif ($type === 'relationship') {
-                    $members[$index]['relationship'] = $meta->value;
+                    $members[$index]['relationship'] = $meta->value ? Str::headline($meta->value) : $meta->value;
                 } elseif ($type === 'dob') {
-                    $members[$index]['dob'] = $meta->value;
+                    $members[$index]['dob'] = $meta->value ? format_fe_date($meta->value) : $meta->value;
                 }
             }
         }

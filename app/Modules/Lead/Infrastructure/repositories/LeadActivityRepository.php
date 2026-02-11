@@ -17,6 +17,8 @@ class LeadActivityRepository implements LeadActivityRepositoryContract
 
     public function getAllLeadActivityByLeadId(GenericId $leadId): Collection
     {
-        return LeadActivity::lead($leadId->value())->get();
+        return LeadActivity::lead($leadId->value())
+            ->orderBy('created_at', 'DESC')
+            ->get();
     }
 }

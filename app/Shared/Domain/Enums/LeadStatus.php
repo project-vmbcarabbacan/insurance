@@ -17,6 +17,21 @@ enum LeadStatus: string
     case LOST = 'lost';
     case INVALID = 'invalid';
 
+    public function label(): string
+    {
+        return match ($this) {
+            self::NEW => 'New',
+            self::CONTACTED => 'Contacted',
+            self::UNRESPONSIVE => 'Unresponsive',
+            self::QUALIFIED => 'Qualified',
+            self::QUOTED => 'Quoted',
+            self::NEGOTIATING => 'Negotiating',
+            self::PENDING_PAYMENT => 'Pending Payment',
+            self::CONVERTED => 'Converted',
+            self::LOST => 'Lost',
+            self::INVALID => 'Invalid',
+        };
+    }
 
     /**
      * Validate and return LeadStatus enum from string value.
