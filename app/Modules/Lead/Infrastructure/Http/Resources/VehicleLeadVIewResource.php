@@ -49,7 +49,7 @@ class VehicleLeadVIewResource extends JsonResource
         $leadStatus = LeadStatus::fromValue($leadArray['status']);
 
         return [
-            'product' => $leadArray['insurance_product_code'] ?? null,
+            'product' => Str::headline($leadArray['insurance_product_code']) ?? null,
             'lead_details' => trim(($enumValues['insurance_product_code'] ?? '') . ' - ' . ($leadArray['lead_details'] ?? '')),
             'due_date' => $leadArray['due_date'] ? format_fe_date_time($leadArray['due_date']) : 'No Due Date',
             'status' => $leadArray['status'] ?? null,

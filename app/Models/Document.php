@@ -15,9 +15,13 @@ class Document extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'type',
+        'uuid',
+        'lead_id',
+        'original_name',
+        'mime_type',
         'file_path',
         'status',
+        'size',
         'uploaded_by',
     ];
 

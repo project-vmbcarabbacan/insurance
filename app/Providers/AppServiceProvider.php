@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Modules\Agent\Provider\AgentProductServiceProvider;
 use App\Modules\Authentication\Provider\AuthenticationServiceProvider;
 use App\Modules\Customer\Provider\CustomerServiceProvider;
+use App\Modules\Document\Provider\DocumentServiceProvider;
 use App\Modules\Lead\Provider\LeadServiceProvider;
 use App\Modules\Master\Provider\MasterServiceProvider;
 use App\Modules\Role\Provider\RoleServiceProvider;
@@ -29,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(AgentProductServiceProvider::class);
         $this->app->register(CustomerServiceProvider::class);
         $this->app->register(LeadServiceProvider::class);
+        $this->app->register(DocumentServiceProvider::class);
     }
 
     /**

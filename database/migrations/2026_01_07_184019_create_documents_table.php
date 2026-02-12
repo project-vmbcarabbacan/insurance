@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
+            $table->unsignedBigInteger('lead_id')->nullable();
 
             // Polymorphic columns
             $table->string('owner_type', 50);
@@ -20,14 +22,21 @@ return new class extends Migration
             $table->index(['owner_type', 'owner_id']);
 
             // Document info
-            $table->string('type');
+            $table->string('original_name');
+            $table->string('mime_type');
             $table->text('file_path');
+            $table->bigInteger('size');
             $table->string('status')->default('pending');
 
             // Audit
             $table->foreignId('uploaded_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();
+
+            $table->foreign('lead_id')
+                ->references('id')
+                ->on('leads')
+                ->onDelete('cascade');
         });
     }
 
