@@ -6,15 +6,25 @@ use App\Shared\Domain\ValueObjects\Uuid;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class DocumentStoreRequest extends FormRequest
+class UuidDocumentRequest extends FormRequest
 {
-
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        try {
+            $this->merge([
+                'uuid' => $this->route('document')
+            ]);
+        } catch (\Throwable $e) {
+            abort(404, 'Invalid document uuid identifier');
+        }
     }
 
     /**
@@ -25,24 +35,12 @@ class DocumentStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'documents' => [
-                'required',
-                'array'
-            ],
-            'documents.*' => [
-                'file',
-                'max:5120',
-                'mimes:pdf,doc,docx,jpg,jpeg,png'
-            ],
-            'lead_uuid' => [
-                'nullable',
-                Rule::exists('leads', 'uuid')
-            ]
+            'uuid' => ['required', Rule::exists('documents', 'uuid')],
         ];
     }
 
     public function uuid(): Uuid
     {
-        return Uuid::fromString($this->lead_uuid);
+        return Uuid::fromString($this->uuid);
     }
 }

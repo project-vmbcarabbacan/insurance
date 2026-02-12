@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Modules\Lead\Domain\Enums\LeadProductType;
 use App\Shared\Domain\Enums\DocumentModule;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class DocumentType extends Model
 {
@@ -25,6 +27,20 @@ class DocumentType extends Model
         'description',
         'required',
     ];
+
+    protected $casts = [
+        'required' => 'boolean'
+    ];
+
+    public function scopeProduct(Builder $query, LeadProductType $product)
+    {
+        return $query->where('module', $product->value);
+    }
+
+    public function scopeProductGeneral(Builder $query, LeadProductType $product)
+    {
+        return $query->whereIn('module', ['general', $product->value]);
+    }
 
     /**
      * Get the attributes that should be cast.

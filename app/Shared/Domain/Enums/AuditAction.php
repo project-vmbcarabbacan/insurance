@@ -144,6 +144,7 @@ enum AuditAction: string
     case DOCUMENT_EXPIRED = 'document_expired';
     case DOCUMENT_ARCHIVED = 'document_archived';
     case DOCUMENT_REPLACED = 'document_replaced';
+    case DOCUMENT_RENAME = 'document_rename';
 
         /*
     |--------------------------------------------------------------------------

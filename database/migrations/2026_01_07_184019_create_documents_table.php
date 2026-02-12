@@ -27,6 +27,7 @@ return new class extends Migration
             $table->text('file_path');
             $table->bigInteger('size');
             $table->string('status')->default('pending');
+            $table->unsignedBigInteger('document_type_id')->nullable();
 
             // Audit
             $table->foreignId('uploaded_by')->nullable()->constrained('users')->nullOnDelete();
@@ -36,6 +37,11 @@ return new class extends Migration
             $table->foreign('lead_id')
                 ->references('id')
                 ->on('leads')
+                ->onDelete('cascade');
+
+            $table->foreign('document_type_id')
+                ->references('id')
+                ->on('document_types')
                 ->onDelete('cascade');
         });
     }
