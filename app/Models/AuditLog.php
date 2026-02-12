@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Shared\Domain\Enums\AuditAction;
+use App\Shared\Domain\Enums\MorphType;
+use App\Shared\Domain\ValueObjects\GenericId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -39,6 +42,21 @@ class AuditLog extends Model
             'new_values' => 'array',
             'action' => AuditAction::class,
         ];
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeMorphType(Builder $query, MorphType $morph)
+    {
+        return $query->where('auditable_type', $morph->value);
+    }
+
+    public function scopeMorphId(Builder $query, GenericId $id)
+    {
+        return $query->where('auditable_id', $id->value());
     }
 
     /**

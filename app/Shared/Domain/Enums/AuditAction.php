@@ -68,8 +68,8 @@ enum AuditAction: string
     case LEAD_UNRESPONSIVE = 'lead_unresponsive';
     case LEAD_LOST = 'lead_lost';
     case LEAD_CONVERTED_TO_CUSTOMER = 'lead_converted_to_customer';
-    case LEAD_META_CREATED = 'lEAD_META_CREATED';
-    case LEAD_META_UPDATED = 'lEAD_META_UPDATED';
+    case LEAD_META_CREATED = 'lead_meta_created';
+    case LEAD_META_UPDATED = 'lead_meta_updated';
 
         /*
     |--------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 
 namespace App\Shared\Infrastructure\Routes;
 
+use App\Shared\Infrastructure\Http\Controllers\AuditController;
 use App\Shared\Infrastructure\Http\Controllers\HealthController;
 use App\Shared\Infrastructure\Http\Controllers\SettingController;
 use App\Shared\Infrastructure\Http\Controllers\VehicleController;
@@ -52,4 +53,9 @@ Route::middleware('auth:sanctum')->prefix('setting')->group(function () {
         Route::get('prerequisites', [HealthController::class, 'leadHealth'])
             ->middleware('throttle:60,1');
     });
+});
+
+Route::middleware('auth:sanctum')->prefix('audits')->group(function () {
+    Route::get('fetch/{morph}/{uuid}', [AuditController::class, 'index'])
+        ->middleware('throttle:60,1');
 });

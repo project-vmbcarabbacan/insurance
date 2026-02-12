@@ -10,10 +10,21 @@ enum CustomerSource: string
     case WEBSITE = 'website';
     case WALKIN = 'walk_in';
     case REFERRAL = 'referral';
-    case SOCIALMedia = 'social_media';
+    case SOCIALMEDIA = 'social_media';
     case ADVERTISEMENT = 'advertisement';
 
 
+    public function label(): string
+    {
+        return match ($this) {
+            self::CRM => 'Crm',
+            self::WEBSITE => 'Website',
+            self::WALKIN => 'Walk In',
+            self::REFERRAL => 'Referral',
+            self::SOCIALMEDIA => 'Social Media',
+            self::ADVERTISEMENT => 'Advertisement'
+        };
+    }
     /**
      * Validate and return CustomerStatus enum from string value.
      *
