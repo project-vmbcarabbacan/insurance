@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Shared\Domain\Enums\GenericStatus;
 use App\Shared\Domain\Enums\QuotationStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -32,6 +33,21 @@ class PolicyProvider extends Model
         return [
             'status' => GenericStatus::class
         ];
+    }
+
+    public function activate(): bool
+    {
+        return $this->update(['status' => GenericStatus::ACTIVE->value]);
+    }
+
+    public function inactivate(): bool
+    {
+        return $this->update(['status' => GenericStatus::INACTIVE->value]);
+    }
+
+    public function scopeActive(Builder $query)
+    {
+        return $query->where('status', GenericStatus::ACTIVE->value);
     }
 
     /**
