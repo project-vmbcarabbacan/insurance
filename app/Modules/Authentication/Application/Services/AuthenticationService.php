@@ -29,7 +29,7 @@ class AuthenticationService
      * @param UserRepositoryContract $user_repository_contract
      */
     public function __construct(
-        protected UserRepositoryContract $user_repository_contract
+        protected UserRepositoryContract $userRepositoryContract
     ) {}
 
     /**
@@ -51,7 +51,7 @@ class AuthenticationService
             ip_address: $login->ip_address
         );
 
-        $user = $this->user_repository_contract->findUserByEmail($entity->email);
+        $user = $this->userRepositoryContract->findUserByEmail($entity->email);
 
         if (!$user) {
             throw new UserNotFoundException();

@@ -10,17 +10,17 @@ class InsuranceProductService
 {
 
     public function __construct(
-        protected InsuranceProductRepositoryContract $insurance_product_repository_contract
+        protected InsuranceProductRepositoryContract $insuranceProductRepositoryContract
     ) {}
 
     public function getAllProduct(): Collection
     {
-        return $this->insurance_product_repository_contract->insuranceProducts();
+        return $this->insuranceProductRepositoryContract->insuranceProducts();
     }
 
     public function getAllProductCode(): array
     {
-        return $this->insurance_product_repository_contract->getInsuranceCode();
+        return $this->insuranceProductRepositoryContract->getInsuranceCode();
     }
 
     public function isValidCode(string $code, array $codes): bool
@@ -30,6 +30,6 @@ class InsuranceProductService
 
     public function getProductByCode(string $code): InsuranceProduct
     {
-        return $this->insurance_product_repository_contract->getInsuranceProductByCode($code);
+        return $this->insuranceProductRepositoryContract->getInsuranceProductByCode($code);
     }
 }

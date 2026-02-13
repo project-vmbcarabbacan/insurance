@@ -9,14 +9,14 @@ use App\Shared\Domain\ValueObjects\GenericId;
 class ProductAgentAccess
 {
     public function __construct(
-        protected InsuranceProductService $insurance_product_service,
-        protected AgentProductService $agent_product_service
+        protected InsuranceProductService $insuranceProductService,
+        protected AgentProductService $agentProductService
     ) {}
 
     public function execute(GenericId $agentId)
     {
-        $products = $this->insurance_product_service->getAllProduct();
-        $accessed = $this->agent_product_service->getAccessByAgentId($agentId);
+        $products = $this->insuranceProductService->getAllProduct();
+        $accessed = $this->agentProductService->getAccessByAgentId($agentId);
 
         return $this->checkAccessedProducts($products, $accessed);
     }

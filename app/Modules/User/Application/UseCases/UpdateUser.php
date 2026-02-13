@@ -13,8 +13,8 @@ use App\Shared\Domain\ValueObjects\GenericId;
 class UpdateUser
 {
     public function __construct(
-        protected UserService $user_service,
-        protected RoleService $role_service
+        protected UserService $userService,
+        protected RoleService $roleService
     ) {}
 
     /**
@@ -32,14 +32,14 @@ class UpdateUser
     public function execute(UpdateUserDto $updateUserDto)
     {
         // Retrieve the existing user or fail fast
-        $existingUser = $this->user_service->getById($updateUserDto->user_id);
+        $existingUser = $this->userService->getById($updateUserDto->user_id);
 
         if (! $existingUser) {
             throw new UserNotFoundException();
         }
 
         // Ensure role exists
-        $role = $this->role_service->getRoleBySlug($updateUserDto->role);
+        $role = $this->roleService->getRoleBySlug($updateUserDto->role);
         if (! $role)
             throw new RoleNotFoundException();
 
@@ -51,6 +51,6 @@ class UpdateUser
         );
 
         // Persist profile changes
-        $this->user_service->updateProfile($updateUserDto->user_id, $userEntity);
+        $this->userService->updateProfile($updateUserDto->user_id, $userEntity);
     }
 }

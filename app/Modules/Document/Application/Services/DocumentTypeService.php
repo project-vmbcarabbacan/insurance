@@ -9,16 +9,16 @@ class DocumentTypeService
 {
 
     public function __construct(
-        public DocumentTypeRepositoryContract $document_type_repository_contract
+        public DocumentTypeRepositoryContract $documentTypeRepositoryContract
     ) {}
 
     public function getDocumentWithGeneral(LeadProductType $product)
     {
-        return $this->document_type_repository_contract->getDocumentGeneralTypes($product);
+        return $this->documentTypeRepositoryContract->getDocumentGeneralTypes($product);
     }
 
     public function getDocument(LeadProductType $product)
     {
-        return $this->document_type_repository_contract->getDocumentTypes($product);
+        return $this->documentTypeRepositoryContract->getDocumentTypes($product);
     }
 }

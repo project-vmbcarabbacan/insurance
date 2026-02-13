@@ -10,20 +10,20 @@ use App\Shared\Domain\ValueObjects\GenericId;
 class UpdateCustomerUseCase
 {
     public function __construct(
-        protected CustomerService $customer_service
+        protected CustomerService $customerService
     ) {}
 
     public function execute(GenericId $customerId, CustomerDto $customerDto)
     {
-        $customer = $this->customer_service->getById($customerId);
+        $customer = $this->customerService->getById($customerId);
 
         if (! $customer) {
             throw new CustomerNotFoundException();
         }
 
-        $this->customer_service->ensureEmailIsUnique($customerDto->email, $customerId);
-        $this->customer_service->ensurePhoneIsUnique($customerDto->phone, $customerId);
+        $this->customerService->ensureEmailIsUnique($customerDto->email, $customerId);
+        $this->customerService->ensurePhoneIsUnique($customerDto->phone, $customerId);
 
-        $this->customer_service->updateCustomer($customerId, $customerDto);
+        $this->customerService->updateCustomer($customerId, $customerDto);
     }
 }

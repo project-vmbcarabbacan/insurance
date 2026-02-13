@@ -15,8 +15,8 @@ use App\Shared\Domain\ValueObjects\Uuid;
 class AddLeadActivityUseCase
 {
     public function __construct(
-        protected LeadService $lead_service,
-        protected LeadActivityService $lead_activity_service
+        protected LeadService $leadService,
+        protected LeadActivityService $leadActivityService
     ) {}
 
     public function execute(Uuid $uuid, LeadActivityDto $leadActivityDto, LeadActivityResponse $leadActivityResponse)
@@ -25,8 +25,8 @@ class AddLeadActivityUseCase
         $dues = LeadActivityResponseDueDateMap::dueIn($leadActivityResponse);
         $dueAt = $dues ? now()->add($dues) : null;
 
-        $this->lead_activity_service->addLeadActivity($leadActivityDto);
-        $this->lead_service->updateLead($uuid, $leadStatus);
-        $this->lead_service->updateDueDate($uuid, $dueAt ? GenericDate::fromString($dueAt) : null);
+        $this->leadActivityService->addLeadActivity($leadActivityDto);
+        $this->leadService->updateLead($uuid, $leadStatus);
+        $this->leadService->updateDueDate($uuid, $dueAt ? GenericDate::fromString($dueAt) : null);
     }
 }

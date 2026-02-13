@@ -12,14 +12,14 @@ use RuntimeException;
 class AgentAssignmentService
 {
     public function __construct(
-        protected AgentAssignmentRepositoryContract $agent_assignment_repository_contract
+        protected AgentAssignmentRepositoryContract $agentAssignmentRepositoryContract
     ) {}
 
     public function assign(GenericId $leadId, string $insuranceProductCode, ?GenericId $manualAgentId = null): AgentAssignment
     {
         return DB::transaction(function () use ($leadId, $insuranceProductCode, $manualAgentId) {
 
-            $setting = $this->agent_assignment_repository_contract->assignmentSetting($insuranceProductCode);
+            $setting = $this->agentAssignmentRepositoryContract->assignmentSetting($insuranceProductCode);
 
 
             return match ($setting->strategy) {
@@ -43,11 +43,11 @@ class AgentAssignmentService
 
     private function roundRobin(GenericId $leadId, string $insuranceProductCode): AgentAssignment
     {
-        $queue = $this->agent_assignment_repository_contract->assignmentRoundRobinQueue($insuranceProductCode);
+        $queue = $this->agentAssignmentRepositoryContract->assignmentRoundRobinQueue($insuranceProductCode);
 
         if (!$queue) throw new RuntimeException('No agent available.');
 
-        $assignment = $this->agent_assignment_repository_contract->assignmentAgent(
+        $assignment = $this->agentAssignmentRepositoryContract->assignmentAgent(
             $leadId,
             GenericId::fromId($queue->agent_id),
             $insuranceProductCode
@@ -61,11 +61,11 @@ class AgentAssignmentService
     private function leastLoaded(GenericId $leadId, string $insuranceProductCode, int $maxActiveLeads): AgentAssignment
     {
         // Count active leads per agent
-        $agent = $this->agent_assignment_repository_contract->assignmentLeastLoadedQueue($insuranceProductCode, $maxActiveLeads);
+        $agent = $this->agentAssignmentRepositoryContract->assignmentLeastLoadedQueue($insuranceProductCode, $maxActiveLeads);
 
         if (!$agent) throw new RuntimeException('No agent available (all at max capacity).');
 
-        return $this->agent_assignment_repository_contract->assignmentAgent(
+        return $this->agentAssignmentRepositoryContract->assignmentAgent(
             $leadId,
             GenericId::fromId($agent->agent_id),
             $insuranceProductCode
@@ -75,11 +75,11 @@ class AgentAssignmentService
     private function manual(GenericId $leadId, string $insuranceProductCode, GenericId $agentId): AgentAssignment
     {
         // Confirm agent has access
-        $queue = $this->agent_assignment_repository_contract->assignmentManualQueue($agentId, $insuranceProductCode);
+        $queue = $this->agentAssignmentRepositoryContract->assignmentManualQueue($agentId, $insuranceProductCode);
 
         if (!$queue) throw new RuntimeException('Agent not available for this product.');
 
-        return $this->agent_assignment_repository_contract->assignmentAgent(
+        return $this->agentAssignmentRepositoryContract->assignmentAgent(
             $leadId,
             $agentId,
             $insuranceProductCode

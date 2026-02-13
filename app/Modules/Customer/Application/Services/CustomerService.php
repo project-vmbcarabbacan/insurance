@@ -21,37 +21,37 @@ class CustomerService
 {
 
     public function __construct(
-        protected CustomerRepositoryContract $customer_repository_contract,
+        protected CustomerRepositoryContract $customerRepositoryContract,
     ) {}
 
     public function getPaginatedCustomer(PaginatedCustomerEntity $entity): LengthAwarePaginator
     {
-        return $this->customer_repository_contract->paginatedCustomer($entity);
+        return $this->customerRepositoryContract->paginatedCustomer($entity);
     }
 
     public function getById(GenericId $customerId)
     {
-        return $this->customer_repository_contract->findById($customerId);
+        return $this->customerRepositoryContract->findById($customerId);
     }
 
     public function getModelById(GenericId $customerId)
     {
-        return $this->customer_repository_contract->modelById($customerId);
+        return $this->customerRepositoryContract->modelById($customerId);
     }
 
     public function getByEmail(Email $email)
     {
-        return $this->customer_repository_contract->findByEmail($email);
+        return $this->customerRepositoryContract->findByEmail($email);
     }
 
     public function getByPhone(Phone $phone)
     {
-        return $this->customer_repository_contract->findByPhone($phone);
+        return $this->customerRepositoryContract->findByPhone($phone);
     }
 
     public function getCustomers()
     {
-        return $this->customer_repository_contract->getAllCustomers();
+        return $this->customerRepositoryContract->getAllCustomers();
     }
 
     public function addCustomer(CustomerDto $customerDto)
@@ -70,7 +70,7 @@ class CustomerService
             registration_no: $customerDto->registration_no
         );
 
-        $customer = $this->customer_repository_contract->createCustomer($customerEntity);
+        $customer = $this->customerRepositoryContract->createCustomer($customerEntity);
 
         $customerEntityWithId = $customerEntity->setId(GenericId::fromId($customer->id));
 
@@ -79,7 +79,7 @@ class CustomerService
 
     public function addCustomerInformation(GenericId $customerId, CustomerEntity $customerEntity)
     {
-        $this->customer_repository_contract->createCustomerInformation($customerId, $customerEntity);
+        $this->customerRepositoryContract->createCustomerInformation($customerId, $customerEntity);
     }
 
     public function updateCustomer(GenericId $customerId, CustomerDto $customerDto)
@@ -98,8 +98,8 @@ class CustomerService
             registration_no: $customerDto->registration_no
         );
 
-        $this->customer_repository_contract->updateCustomer($customerId, $customerEntity);
-        $this->customer_repository_contract->updateCustomerInformation($customerId, $customerEntity);
+        $this->customerRepositoryContract->updateCustomer($customerId, $customerEntity);
+        $this->customerRepositoryContract->updateCustomerInformation($customerId, $customerEntity);
     }
 
     public function updatePartialCustomer(CustomerInformationDto $customerInformationDto)
@@ -111,17 +111,17 @@ class CustomerService
             phone: $customerInformationDto->phone
         );
 
-        $this->customer_repository_contract->updatePartialCustomer($information);
+        $this->customerRepositoryContract->updatePartialCustomer($information);
     }
 
     public function updateUserId(GenericId $customerId, GenericId $userId)
     {
-        $this->customer_repository_contract->updateUserId($customerId, $userId);
+        $this->customerRepositoryContract->updateUserId($customerId, $userId);
     }
 
     public function updateCustomerStatus(GenericId $customerId, CustomerStatus $customerStatus)
     {
-        $this->customer_repository_contract->updateCustomerStatus($customerId, $customerStatus);
+        $this->customerRepositoryContract->updateCustomerStatus($customerId, $customerStatus);
     }
 
     /**

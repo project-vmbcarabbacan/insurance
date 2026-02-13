@@ -22,11 +22,11 @@ class CreateLeadUseCase
 {
 
     public function __construct(
-        protected LeadService $lead_service,
-        protected LeadMetaService $lead_meta_service,
-        protected LeadActivityService $lead_activity_service,
-        protected AgentAssignmentService $agent_assignment_service,
-        protected UserService $user_service
+        protected LeadService $leadService,
+        protected LeadMetaService $leadMetaService,
+        protected LeadActivityService $leadActivityService,
+        protected AgentAssignmentService $agentAssignmentService,
+        protected UserService $userService
     ) {}
 
     public function execute(Customer $customer, CreateLeadDto $createLeadDto, ?array $condition = [])
@@ -34,9 +34,9 @@ class CreateLeadUseCase
         $customerId = GenericId::fromId($customer->id);
         $code = LeadProductType::fromValue($createLeadDto->code->value());
 
-        $pivot = $this->lead_meta_service->pivot($code, LeadKeyMap::activeVehicleLead());
+        $pivot = $this->leadMetaService->pivot($code, LeadKeyMap::activeVehicleLead());
 
-        $active = $this->lead_service->activeLead($customerId, $code, $pivot);
+        $active = $this->leadService->activeLead($customerId, $code, $pivot);
         $needsConditionCheck = !empty($condition); // only consider condition if it's not empty
 
         if (!$active) {
@@ -62,14 +62,14 @@ class CreateLeadUseCase
         }
 
         if ($needsConditionCheck) {
-            $active = $this->lead_service->activeLead($customerId, $code, $pivot, $condition);
+            $active = $this->leadService->activeLead($customerId, $code, $pivot, $condition);
         }
 
         if ($active) return $active;
 
         // Create new lead
         $createLeadDto = $createLeadDto->withCustomerId($customerId);
-        $lead = $this->lead_service->createLead($createLeadDto);
+        $lead = $this->leadService->createLead($createLeadDto);
         $leadId = GenericId::fromId($lead->id);
 
         // Record lead creation activity
@@ -79,7 +79,7 @@ class CreateLeadUseCase
         if (!empty($lead->assigned_agent_id)) return $lead;
 
         // Add metadata
-        $this->lead_meta_service->addMeta(
+        $this->leadMetaService->addMeta(
             $leadId,
             [
                 'customer_id' => $customerId->value()
@@ -88,12 +88,12 @@ class CreateLeadUseCase
         );
 
         // Assign agent
-        $agentAssignment = $this->agent_assignment_service->assign($leadId, $createLeadDto->code->value(), $createLeadDto->assigned_agent_id);
+        $agentAssignment = $this->agentAssignmentService->assign($leadId, $createLeadDto->code->value(), $createLeadDto->assigned_agent_id);
 
         $agentId = GenericId::fromId($agentAssignment->agent_id);
-        $user = $this->user_service->getById($agentId);
+        $user = $this->userService->getById($agentId);
 
-        $this->lead_service->agentAssignment($leadId, $user);
+        $this->leadService->agentAssignment($leadId, $user);
 
         // Generate lead assigned activity and set due date
         $this->generateLeadAcitivity($leadId, LeadActivityType::LEAD_ASSIGNED, getAuthenticatedUser());
@@ -101,14 +101,14 @@ class CreateLeadUseCase
         $dues = LeadActivityDueDateMap::dueIn(LeadActivityType::LEAD_ASSIGNED);
         $dueAt = $dues ? now()->add($dues) : null;
         $uuid = Uuid::fromString($lead->uuid);
-        $this->lead_service->updateDueDate($uuid, $dueAt ? GenericDate::fromString($dueAt) : null);
+        $this->leadService->updateDueDate($uuid, $dueAt ? GenericDate::fromString($dueAt) : null);
 
         return $lead;
     }
 
     private function generateLeadAcitivity(GenericId $leadId, LeadActivityType $leadActivityType, ?User $user = null, ?string $notes = null)
     {
-        $dto = $this->lead_activity_service->generateLeadDto($leadId, $leadActivityType, $user, $notes);
-        $this->lead_activity_service->addLeadActivity($dto);
+        $dto = $this->leadActivityService->generateLeadDto($leadId, $leadActivityType, $user, $notes);
+        $this->leadActivityService->addLeadActivity($dto);
     }
 }

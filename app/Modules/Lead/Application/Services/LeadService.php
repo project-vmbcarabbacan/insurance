@@ -19,7 +19,7 @@ class LeadService
 {
 
     public function __construct(
-        protected LeadRepositoryContract $lead_repository_contract
+        protected LeadRepositoryContract $leadRepositoryContract
     ) {}
 
     public function createLead(CreateLeadDto $createLeadDto)
@@ -33,41 +33,41 @@ class LeadService
             assigned_agent_id: $createLeadDto->assigned_agent_id
         );
 
-        return $this->lead_repository_contract->addLead($leadEntity);
+        return $this->leadRepositoryContract->addLead($leadEntity);
     }
 
     public function agentAssignment(GenericId $leadId, User $user)
     {
-        $this->lead_repository_contract->assignAgentId($leadId, $user);
+        $this->leadRepositoryContract->assignAgentId($leadId, $user);
     }
 
     public function updateLead(Uuid $uuid, LeadStatus $leadStatus)
     {
-        $this->lead_repository_contract->updateLeadStatus($uuid, $leadStatus);
+        $this->leadRepositoryContract->updateLeadStatus($uuid, $leadStatus);
     }
 
     public function updateDueDate(Uuid $uuid, ?GenericDate $dueDate)
     {
-        $this->lead_repository_contract->updateLeadDueDate($uuid, $dueDate);
+        $this->leadRepositoryContract->updateLeadDueDate($uuid, $dueDate);
     }
 
     public function getLeadsByCustomerId(GenericId $customerId, ?LowerText $keyword = null, int $per_page = 4)
     {
-        return $this->lead_repository_contract->findByCustomerId($customerId, $keyword, $per_page);
+        return $this->leadRepositoryContract->findByCustomerId($customerId, $keyword, $per_page);
     }
 
     public function getLeadByUuid(Uuid $uuid)
     {
-        return $this->lead_repository_contract->findByUuid($uuid);
+        return $this->leadRepositoryContract->findByUuid($uuid);
     }
 
     public function getLeadByIdd(GenericId $id)
     {
-        return $this->lead_repository_contract->findLeadById($id);
+        return $this->leadRepositoryContract->findLeadById($id);
     }
 
     public function activeLead(GenericId $customerId, LeadProductType $code, Builder $pivot, ?array $conditions = [])
     {
-        return $this->lead_repository_contract->activeLead($customerId, $code, $pivot, $conditions);
+        return $this->leadRepositoryContract->activeLead($customerId, $code, $pivot, $conditions);
     }
 }

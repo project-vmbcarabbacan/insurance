@@ -11,18 +11,18 @@ use App\Shared\Domain\ValueObjects\GenericId;
 class UpdateCustomerUserIdUseCase
 {
     public function __construct(
-        protected CustomerService $customer_service,
-        protected UserService $user_service
+        protected CustomerService $customerService,
+        protected UserService $userService
     ) {}
 
     public function execute(GenericId $customerId, GenericId $userId)
     {
-        $customer = $this->customer_service->getById($customerId);
+        $customer = $this->customerService->getById($customerId);
         if (! $customer) {
             throw new CustomerNotFoundException();
         }
 
-        $user = $this->user_service->getById($userId);
+        $user = $this->userService->getById($userId);
         if (! $user) {
             throw new UserNotFoundException();
         }
@@ -34,6 +34,6 @@ class UpdateCustomerUserIdUseCase
             return;
         }
 
-        $this->customer_service->updateUserId($customerId, $userId);
+        $this->customerService->updateUserId($customerId, $userId);
     }
 }

@@ -10,12 +10,12 @@ use App\Shared\Domain\ValueObjects\GenericId;
 class UpdateCustomerStatusUseCase
 {
     public function __construct(
-        protected CustomerService $customer_service
+        protected CustomerService $customerService
     ) {}
 
     public function execute(GenericId $customerId, CustomerStatus $customerStatus)
     {
-        $customer = $this->customer_service->getById($customerId);
+        $customer = $this->customerService->getById($customerId);
 
 
         if (! $customer) {
@@ -29,6 +29,6 @@ class UpdateCustomerStatusUseCase
             return;
         }
 
-        $this->customer_service->updateCustomerStatus($customerId, $customerStatus);
+        $this->customerService->updateCustomerStatus($customerId, $customerStatus);
     }
 }

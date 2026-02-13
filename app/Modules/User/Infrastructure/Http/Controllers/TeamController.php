@@ -22,7 +22,7 @@ use App\Modules\User\Infrastructure\Http\Resources\TeamResource;
 class TeamController
 {
     public function __construct(
-        protected UserService $user_service
+        protected UserService $userService
     ) {}
 
     public function index(PaginatedUserRequest $request, PaginatedUsers $paginated_users)

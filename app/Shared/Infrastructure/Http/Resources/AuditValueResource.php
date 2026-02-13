@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Shared\Application\Services\MasterService;
 use App\Shared\Domain\Enums\ClaimHistory;
+use App\Shared\Domain\Enums\Currency;
 use App\Shared\Domain\Enums\CustomerSource;
 use App\Shared\Domain\Enums\Emirates as EnumsEmirates;
 use App\Shared\Domain\Enums\GenderType;
@@ -83,6 +84,16 @@ class AuditValueResource extends JsonResource
         |--------------------------------------------------------------------------
         */
 
+        // Remove vehicle_* keys
+        $values = $values->reject(
+            fn($value, $key) => str_starts_with($key, 'vehicle_make_id') ||
+                str_starts_with($key, 'vehicle_model_id') ||
+                str_starts_with($key, 'vehicle_trim_id') ||
+                str_starts_with($key, 'driver_first_name') ||
+                str_starts_with($key, 'driver_last_name') ||
+                str_starts_with($key, 'driver_nationality')
+        );
+
         $mapped = $values->map(function ($value, $key) {
 
             $value = $this->transformValue($key, $value);
@@ -92,6 +103,8 @@ class AuditValueResource extends JsonResource
                 'value' => $value,
             ];
         })->values()->toArray();
+
+
 
         return array_merge($mapped, $healthMembersOutput);
     }
@@ -128,6 +141,10 @@ class AuditValueResource extends JsonResource
             'nationality' => $this->mapNationality($value),
             'document_type' => $this->mapDocumentType($value),
             'uploaded_by' => $this->mapUser($value),
+            'vehicle_value' => $this->mapNumberFormat($value),
+            'size' => $this->mapNumberFormat($value, false),
+            'driver_dob' => $this->mapDateFormat($value, false),
+            'driving_experience' => $this->mapYears($value),
 
             'file_path' => asset('storage/' . $value),
 
@@ -181,5 +198,42 @@ class AuditValueResource extends JsonResource
         $documentType = DB::table('users')->where('id', $id)->first();
 
         return $documentType?->name ?? 'System';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Number Format Mapping
+    |--------------------------------------------------------------------------
+    */
+    protected function mapNumberFormat($value, $isCurrency = true)
+    {
+        $currency = Currency::AED->value;
+        $format = number_format($value, 2);
+        if ($isCurrency) return "$currency $format";
+        else return number_format($value);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Number Format Mapping
+    |--------------------------------------------------------------------------
+    */
+    protected function mapDateFormat($value, $isTimeDate = true)
+    {
+        if ($isTimeDate) return format_fe_date_time($value);
+        else return format_fe_date($value);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Number Format Mapping
+    |--------------------------------------------------------------------------
+    */
+    protected function mapYears($value)
+    {
+        $type = "year";
+        if ($value > 1) $type = "years";
+
+        return "$value $type";
     }
 }

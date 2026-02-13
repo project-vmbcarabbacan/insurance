@@ -17,9 +17,9 @@ class RoleService
 {
 
     public function __construct(
-        protected RoleRepositoryContract $role_repository_contract,
-        protected PermissionRepositoryContract $permission_repository_contract,
-        protected RolePermissionRepositoryContract $role_permission_repository_contract
+        protected RoleRepositoryContract $roleRepositoryContract,
+        protected PermissionRepositoryContract $permissionRepositoryContract,
+        protected RolePermissionRepositoryContract $rolePermissionRepositoryContract
     ) {}
 
     /**
@@ -29,7 +29,7 @@ class RoleService
      */
     public function getAllRoles(): Collection
     {
-        return $this->role_repository_contract->getAllRoles();
+        return $this->roleRepositoryContract->getAllRoles();
     }
 
     /**
@@ -40,7 +40,7 @@ class RoleService
      */
     public function getRoleById(GenericId $roleId): ?Role
     {
-        return $this->role_repository_contract->findByRoleId($roleId);
+        return $this->roleRepositoryContract->findByRoleId($roleId);
     }
 
     /**
@@ -51,7 +51,7 @@ class RoleService
      */
     public function getRoleBySlug(LowerText $slug): ?Role
     {
-        return $this->role_repository_contract->findBySlug($slug);
+        return $this->roleRepositoryContract->findBySlug($slug);
     }
 
     /**
@@ -62,7 +62,7 @@ class RoleService
      */
     public function createRole(RoleEntity $roleEntity): void
     {
-        $this->role_repository_contract->createRole($roleEntity);
+        $this->roleRepositoryContract->createRole($roleEntity);
     }
 
     /**
@@ -74,7 +74,7 @@ class RoleService
      */
     public function updateRole(GenericId $roleId, RoleEntity $roleEntity): void
     {
-        $this->role_repository_contract->updateRole($roleId, $roleEntity);
+        $this->roleRepositoryContract->updateRole($roleId, $roleEntity);
     }
 
     /**
@@ -84,7 +84,7 @@ class RoleService
      */
     public function getAllPermissions(): Collection
     {
-        return $this->permission_repository_contract->getAllPermissions();
+        return $this->permissionRepositoryContract->getAllPermissions();
     }
 
     /**
@@ -95,7 +95,7 @@ class RoleService
      */
     public function getPermissionById(GenericId $permissionId): ?Permission
     {
-        return $this->permission_repository_contract->findById($permissionId);
+        return $this->permissionRepositoryContract->findById($permissionId);
     }
 
     /**
@@ -106,7 +106,7 @@ class RoleService
      */
     public function getALlPermissionByRoleId(GenericId $roleId): Collection
     {
-        return $this->role_permission_repository_contract->findAllPermissionByRoleId($roleId);
+        return $this->rolePermissionRepositoryContract->findAllPermissionByRoleId($roleId);
     }
 
     /**
@@ -117,7 +117,7 @@ class RoleService
      */
     public function addRolePermission(RolePermissionEntity $rolePermissionEntity): void
     {
-        $this->role_permission_repository_contract->add($rolePermissionEntity);
+        $this->rolePermissionRepositoryContract->add($rolePermissionEntity);
     }
 
     /**
@@ -128,6 +128,6 @@ class RoleService
      */
     public function deleteRolePermission(GenericId $rolePermissionId): void
     {
-        $this->role_permission_repository_contract->delete($rolePermissionId);
+        $this->rolePermissionRepositoryContract->delete($rolePermissionId);
     }
 }

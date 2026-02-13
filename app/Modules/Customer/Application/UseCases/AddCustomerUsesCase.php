@@ -8,18 +8,18 @@ use App\Modules\Customer\Application\Services\CustomerService;
 class AddCustomerUsesCase
 {
     public function __construct(
-        protected CustomerService $customer_service,
+        protected CustomerService $customerService,
     ) {}
 
     public function execute(CustomerDto $customerDto)
     {
-        $this->customer_service->ensureEmailIsUnique($customerDto->email);
-        $this->customer_service->ensurePhoneIsUnique($customerDto->phone);
+        $this->customerService->ensureEmailIsUnique($customerDto->email);
+        $this->customerService->ensurePhoneIsUnique($customerDto->phone);
 
-        $customerEntity = $this->customer_service->addCustomer($customerDto);
+        $customerEntity = $this->customerService->addCustomer($customerDto);
 
-        $this->customer_service->addCustomerInformation($customerEntity->getCustomerId(), $customerEntity);
+        $this->customerService->addCustomerInformation($customerEntity->getCustomerId(), $customerEntity);
 
-        return $this->customer_service->getModelById($customerEntity->getCustomerId());
+        return $this->customerService->getModelById($customerEntity->getCustomerId());
     }
 }

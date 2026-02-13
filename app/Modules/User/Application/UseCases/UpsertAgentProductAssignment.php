@@ -11,13 +11,13 @@ use App\Shared\Domain\ValueObjects\GenericId;
 class UpsertAgentProductAssignment
 {
     public function __construct(
-        protected UserService $user_service,
-        protected AgentProductService $agent_product_service
+        protected UserService $userService,
+        protected AgentProductService $agentProductService
     ) {}
 
     public function execute(GenericId $agentId, array $products)
     {
-        $user = $this->user_service->getById($agentId);
+        $user = $this->userService->getById($agentId);
 
         if (!$user) {
             throw new UserNotFoundException();
@@ -33,7 +33,7 @@ class UpsertAgentProductAssignment
             ];
         }
 
-        $this->agent_product_service->upsertAccessed(
+        $this->agentProductService->upsertAccessed(
             $data,
             ['agent_id', 'insurance_product_code'],
             ['is_active', 'priority']

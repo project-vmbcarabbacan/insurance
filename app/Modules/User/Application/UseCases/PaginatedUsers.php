@@ -12,7 +12,7 @@ class PaginatedUsers
      * @param UserService $user_service Handles user-related domain operations
      */
     public function __construct(
-        protected UserService $user_service,
+        protected UserService $userService,
     ) {}
 
     public function execute(PaginatedUserDto $paginatedUserDto)
@@ -25,6 +25,6 @@ class PaginatedUsers
             role_slug: $paginatedUserDto->role_slug
         );
 
-        return $this->user_service->getPaginatedUsers($entity);
+        return $this->userService->getPaginatedUsers($entity);
     }
 }

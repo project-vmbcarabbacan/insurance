@@ -34,8 +34,8 @@ class LoginSpa
      * @param UserService $user_service
      */
     public function __construct(
-        protected AuthenticationService $authentication_service,
-        protected UserService $user_service
+        protected AuthenticationService $authenticationService,
+        protected UserService $userService
     ) {}
 
     /**
@@ -61,10 +61,10 @@ class LoginSpa
             'password' => $login->password->plain(),
         ];
         // Attempt authentication
-        $authenticated = $this->authentication_service->attempt($credentials);
+        $authenticated = $this->authenticationService->attempt($credentials);
 
         // Retrieve user by email to record failed login audit if user exists
-        $user = $this->user_service->getEmail($login->email);
+        $user = $this->userService->getEmail($login->email);
 
         // Handle customer trying to login in CRM
         if ($user->isCustomer()) {
@@ -84,7 +84,7 @@ class LoginSpa
 
 
         // Authentication successful: retrieve user if not already loaded
-        $user = auth('web')->user() ?? $this->user_service->getEmail($login->email);
+        $user = auth('web')->user() ?? $this->userService->getEmail($login->email);
 
         if ($user->status !== GenericStatus::ACTIVE) {
             throw new AuthenticationStatusNotActiveException();

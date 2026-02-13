@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class UserController
 {
     public function __construct(
-        protected UserService $user_service
+        protected UserService $userService
     ) {}
 
     public function getCurrentuser(Request $request)

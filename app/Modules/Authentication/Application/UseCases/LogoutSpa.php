@@ -23,7 +23,7 @@ class LogoutSpa
      * @param AuthenticationService $authentication_service
      */
     public function __construct(
-        protected AuthenticationService $authentication_service
+        protected AuthenticationService $authenticationService
     ) {}
 
     /**
@@ -40,7 +40,7 @@ class LogoutSpa
     public function execute(Request $request)
     {
         // Revoke authentication credentials (e.g., tokens, cookies)
-        $this->authentication_service->logout();
+        $this->authenticationService->logout();
 
         // Invalidate the current session to clear all session data
         $request->session()->invalidate();

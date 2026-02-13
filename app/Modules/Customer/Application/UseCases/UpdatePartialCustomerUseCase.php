@@ -9,25 +9,25 @@ use App\Modules\Customer\Application\Services\CustomerService;
 class UpdatePartialCustomerUseCase
 {
     public function __construct(
-        protected CustomerService $customer_service
+        protected CustomerService $customerService
     ) {}
 
     public function execute(CustomerInformationDto $customerInformationDto)
     {
-        $customer = $this->customer_service->getById($customerInformationDto->customer_id);
+        $customer = $this->customerService->getById($customerInformationDto->customer_id);
 
         if (! $customer) {
             throw new CustomerNotFoundException();
         }
 
         if ($customerInformationDto->email->value()) {
-            $this->customer_service->ensureEmailIsUnique($customerInformationDto->email, $customerInformationDto->customer_id);
+            $this->customerService->ensureEmailIsUnique($customerInformationDto->email, $customerInformationDto->customer_id);
         }
 
         if ($customerInformationDto->phone->value()) {
-            $this->customer_service->ensurePhoneIsUnique($customerInformationDto->phone, $customerInformationDto->customer_id);
+            $this->customerService->ensurePhoneIsUnique($customerInformationDto->phone, $customerInformationDto->customer_id);
         }
 
-        $this->customer_service->updatePartialCustomer($customerInformationDto);
+        $this->customerService->updatePartialCustomer($customerInformationDto);
     }
 }

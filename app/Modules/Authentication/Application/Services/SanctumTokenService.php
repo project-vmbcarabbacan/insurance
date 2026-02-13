@@ -25,7 +25,7 @@ class SanctumTokenService
      * @param UserRepositoryContract $user_repository_contract
      */
     public function __construct(
-        protected UserRepositoryContract $user_repository_contract
+        protected UserRepositoryContract $userRepositoryContract
     ) {}
 
     /**

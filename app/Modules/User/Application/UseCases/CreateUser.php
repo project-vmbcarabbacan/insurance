@@ -31,10 +31,10 @@ class CreateUser
      * @param RoleService $role_service Handles role lookup and validation
      */
     public function __construct(
-        protected UserService $user_service,
-        protected RoleService $role_service,
-        protected InsuranceProductService $insurance_product_service,
-        protected AgentProductService $agent_product_service
+        protected UserService $userService,
+        protected RoleService $roleService,
+        protected InsuranceProductService $insuranceProductService,
+        protected AgentProductService $agentProductService
     ) {}
 
     /**
@@ -50,12 +50,12 @@ class CreateUser
     public function execute(CreateUserDto $createUserDto)
     {
         // Ensure email uniqueness
-        if ($this->user_service->getEmail($createUserDto->email)) {
+        if ($this->userService->getEmail($createUserDto->email)) {
             throw new EmailAlreadyExistsException();
         }
 
         // Ensure role exists
-        $role = $this->role_service->getRoleBySlug($createUserDto->role);
+        $role = $this->roleService->getRoleBySlug($createUserDto->role);
         if (! $role)
             throw new RoleNotFoundException();
 
@@ -69,10 +69,10 @@ class CreateUser
         );
 
         // Persist user through domain service
-        $user = $this->user_service->createUser($createUserEntity);
+        $user = $this->userService->createUser($createUserEntity);
 
         if (in_array($createUserDto->role, [RoleSlug::AGENT->value, RoleSlug::TEAM_LEAD->value])) {
-            $products = $this->insurance_product_service->getAllProduct();
+            $products = $this->insuranceProductService->getAllProduct();
             $accessed = [];
             foreach ($products as $product) {
                 $accessed[] = [
@@ -82,7 +82,7 @@ class CreateUser
                 ];
             }
 
-            $this->agent_product_service->addAccessByAgentId(GenericId::fromId($user->id), $accessed);
+            $this->agentProductService->addAccessByAgentId(GenericId::fromId($user->id), $accessed);
         }
     }
 }

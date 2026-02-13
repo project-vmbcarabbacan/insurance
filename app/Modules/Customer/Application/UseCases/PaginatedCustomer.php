@@ -10,7 +10,7 @@ class PaginatedCustomer
 {
 
     public function __construct(
-        protected CustomerService $customer_service
+        protected CustomerService $customerService
     ) {}
 
     public function execute(PaginatedCustomerDto $paginatedCustomerDto)
@@ -23,6 +23,6 @@ class PaginatedCustomer
             dates: $paginatedCustomerDto->dates
         );
 
-        return $this->customer_service->getPaginatedCustomer($entity);
+        return $this->customerService->getPaginatedCustomer($entity);
     }
 }

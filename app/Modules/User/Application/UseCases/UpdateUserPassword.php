@@ -23,7 +23,7 @@ class UpdateUserPassword
      * @param UserService $user_service Handles user-related domain operations
      */
     public function __construct(
-        protected UserService $user_service
+        protected UserService $userService
     ) {}
 
     /**
@@ -44,11 +44,11 @@ class UpdateUserPassword
         }
 
         // Ensure user exists
-        if (! $this->user_service->getById($updatePasswordDto->user_id)) {
+        if (! $this->userService->getById($updatePasswordDto->user_id)) {
             throw new UserNotFoundException();
         }
 
         // Delegate password update to the domain service
-        $this->user_service->updatePassword($updatePasswordDto->user_id, $updatePasswordDto->password);
+        $this->userService->updatePassword($updatePasswordDto->user_id, $updatePasswordDto->password);
     }
 }

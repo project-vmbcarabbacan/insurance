@@ -14,36 +14,36 @@ class LeadMetaService
 {
 
     public function __construct(
-        protected LeadFactory $lead_factory
+        protected LeadFactory $leadFactory
     ) {}
 
     public function addMeta(GenericId $leadId, array $data, LeadProductType $type)
     {
-        $repo = $this->lead_factory->make($type);
+        $repo = $this->leadFactory->make($type);
         $repo->addLeadMeta($leadId, $data);
     }
 
     public function updateMeta(Lead $lead, array $data, LeadProductType $type)
     {
-        $repo = $this->lead_factory->make($type);
+        $repo = $this->leadFactory->make($type);
         $repo->updateLeadMeta($lead, $data);
     }
 
     public function byCustomerId(GenericId $customerId, LeadProductType $type, array $map)
     {
-        $repo = $this->lead_factory->make($type);
+        $repo = $this->leadFactory->make($type);
         return $repo->getLeadByCustomerId($customerId, $map);
     }
 
     public function byLeadId(Uuid $uuid, LeadProductType $type, array $map)
     {
-        $repo = $this->lead_factory->make($type);
+        $repo = $this->leadFactory->make($type);
         return $repo->getLeadByLeadId($uuid, $map);
     }
 
     public function memberKeys(GenericId $leadId, LeadProductType $type)
     {
-        $repo = $this->lead_factory->make($type);
+        $repo = $this->leadFactory->make($type);
         return $repo->getMemberKeys($leadId);
     }
 
@@ -92,13 +92,13 @@ class LeadMetaService
 
     public function deleteMeta(GenericId $leadId, LeadProductType $type, array $keys)
     {
-        $repo = $this->lead_factory->make($type);
+        $repo = $this->leadFactory->make($type);
         $repo->deleteLeadMeta($leadId, $keys);
     }
 
     public function pivot(LeadProductType $type, array $fileds = [])
     {
-        $repo = $this->lead_factory->make($type);
+        $repo = $this->leadFactory->make($type);
         return $repo->pivotQuery($fileds);
     }
 }

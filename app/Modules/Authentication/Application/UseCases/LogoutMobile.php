@@ -22,7 +22,7 @@ class LogoutMobile
      * @param SanctumTokenService $sanctum_token_service
      */
     public function __construct(
-        protected SanctumTokenService $sanctum_token_service
+        protected SanctumTokenService $sanctumTokenService
     ) {}
 
     /**
@@ -37,10 +37,10 @@ class LogoutMobile
     {
         if ($revoke_all) {
             // Revoke all tokens for the user and record an audit log
-            $this->sanctum_token_service->revokeAllTokens();
+            $this->sanctumTokenService->revokeAllTokens();
         } else {
             // Revoke only the current token and record an audit log
-            $this->sanctum_token_service->revokeCurrentToken();
+            $this->sanctumTokenService->revokeCurrentToken();
         }
     }
 }

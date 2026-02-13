@@ -15,12 +15,12 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class UserService
 {
     public function __construct(
-        protected UserRepositoryContract $user_repository_contract
+        protected UserRepositoryContract $userRepositoryContract
     ) {}
 
     public function getPaginatedUsers(PaginatedUserEntity $paginatedUserEntity): LengthAwarePaginator
     {
-        return $this->user_repository_contract->paginatedUser($paginatedUserEntity);
+        return $this->userRepositoryContract->paginatedUser($paginatedUserEntity);
     }
 
     /**
@@ -36,7 +36,7 @@ class UserService
      */
     public function getEmail(Email $email): ?User
     {
-        return $this->user_repository_contract->findUserByEmail($email);
+        return $this->userRepositoryContract->findUserByEmail($email);
     }
 
     /**
@@ -50,7 +50,7 @@ class UserService
      */
     public function getById(GenericId $userId): ?User
     {
-        return $this->user_repository_contract->findUserById($userId);
+        return $this->userRepositoryContract->findUserById($userId);
     }
 
     /**
@@ -63,7 +63,7 @@ class UserService
      */
     public function createUser(CreateUserEntity $createUserEntity): ?User
     {
-        return $this->user_repository_contract->createUser($createUserEntity);
+        return $this->userRepositoryContract->createUser($createUserEntity);
     }
 
     /**
@@ -77,7 +77,7 @@ class UserService
      */
     public function updatePassword(GenericId $userId, Password $password): void
     {
-        $this->user_repository_contract->updatePassword($userId, $password);
+        $this->userRepositoryContract->updatePassword($userId, $password);
     }
 
     /**
@@ -91,7 +91,7 @@ class UserService
      */
     public function activeUser(GenericId $userId): void
     {
-        $this->user_repository_contract->activateUser($userId);
+        $this->userRepositoryContract->activateUser($userId);
     }
 
     /**
@@ -104,7 +104,7 @@ class UserService
      */
     public function deactivateUser(GenericId $userId): void
     {
-        $this->user_repository_contract->deactivateUser($userId);
+        $this->userRepositoryContract->deactivateUser($userId);
     }
 
     /**
@@ -117,7 +117,7 @@ class UserService
      */
     public function suspendUser(GenericId $userId): void
     {
-        $this->user_repository_contract->suspendUser($userId);
+        $this->userRepositoryContract->suspendUser($userId);
     }
 
     /**
@@ -130,7 +130,7 @@ class UserService
      */
     public function deleteUser(GenericId $userId): void
     {
-        $this->user_repository_contract->deleteUser($userId);
+        $this->userRepositoryContract->deleteUser($userId);
     }
 
     /**
@@ -144,6 +144,6 @@ class UserService
      */
     public function updateProfile(GenericId $userId, UserEntity $userEntity): void
     {
-        $this->user_repository_contract->updateProfile($userId, $userEntity);
+        $this->userRepositoryContract->updateProfile($userId, $userEntity);
     }
 }

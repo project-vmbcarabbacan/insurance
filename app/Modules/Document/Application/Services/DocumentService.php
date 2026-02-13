@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Storage;
 class DocumentService
 {
     public function __construct(
-        protected DocumentRepositoryContract $document_repository_contract,
-        protected LeadService $lead_service,
-        protected DocumentTypeService $document_type_service,
+        protected DocumentRepositoryContract $documentRepositoryContract,
+        protected LeadService $leadService,
+        protected DocumentTypeService $documentTypeService,
     ) {}
 
     public function store(UploadedFile $file, Uuid $leadUuid): DocumentEntity
@@ -60,8 +60,8 @@ class DocumentService
         $leadId = GenericId::fromId($lead->id);
         $product = LeadProductType::fromValue($lead->insurance_product_code);
         return [
-            $this->document_repository_contract->getAllDocuments($leadId),
-            $this->document_type_service->getDocumentWithGeneral($product)
+            $this->documentRepositoryContract->getAllDocuments($leadId),
+            $this->documentTypeService->getDocumentWithGeneral($product)
         ];
     }
 
@@ -72,7 +72,7 @@ class DocumentService
         $lead = $this->getLeadByUuid($leadUuid);
 
         /* update databsae column type */
-        $this->document_repository_contract->updateType($documentUuid, $documentTypeId);
+        $this->documentRepositoryContract->updateType($documentUuid, $documentTypeId);
 
         insurance_audit(
             $lead,
@@ -92,7 +92,7 @@ class DocumentService
         Storage::disk('public')->delete($document->file_path);
 
         /* delte database record */
-        $this->document_repository_contract->deleteDocument($documentUuid);
+        $this->documentRepositoryContract->deleteDocument($documentUuid);
 
         insurance_audit(
             $lead,
@@ -107,7 +107,7 @@ class DocumentService
 
     public function getDocument(Uuid $uuid, ?array $relation = [])
     {
-        $document = $this->document_repository_contract->getDocument($uuid, $relation);
+        $document = $this->documentRepositoryContract->getDocument($uuid, $relation);
         if (!$document) throw new DocumentNotFoundException();
 
         return $document;
@@ -143,7 +143,7 @@ class DocumentService
         $disk->move($document->file_path, $newPath);
 
         /* update the filename and original name */
-        $this->document_repository_contract->updateFileName(
+        $this->documentRepositoryContract->updateFileName(
             $documentUuid,
             $newPath,
             $safeName . '.' . $extension
@@ -165,7 +165,7 @@ class DocumentService
 
     private function getLeadByUuid(Uuid $uuid)
     {
-        $lead = $this->lead_service->getLeadByUuid($uuid);
+        $lead = $this->leadService->getLeadByUuid($uuid);
         if (!$lead) throw new LeadUuidNotFoundException();
 
         return $lead;
@@ -173,7 +173,7 @@ class DocumentService
 
     private function getLeadById(GenericId $leadId)
     {
-        $lead = $this->lead_service->getLeadByIdd($leadId);
+        $lead = $this->leadService->getLeadByIdd($leadId);
         if (!$lead) throw new LeadUuidNotFoundException();
 
         return $lead;

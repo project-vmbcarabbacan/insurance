@@ -13,9 +13,9 @@ use Throwable;
 class UpsertVehicleLeadMetaUseCase
 {
     public function __construct(
-        protected LeadMetaService $lead_meta_service,
-        protected VehiclePrerequisiteService $vehicle_prerequisite_service,
-        protected MasterService $master_service,
+        protected LeadMetaService $leadMetaService,
+        protected VehiclePrerequisiteService $vehiclePrerequisiteService,
+        protected MasterService $masterService,
     ) {}
 
     public function execute(Lead $lead, array $data): void
@@ -27,7 +27,7 @@ class UpsertVehicleLeadMetaUseCase
 
             $code = LeadProductType::fromValue($lead->insurance_product_code);
 
-            $this->lead_meta_service->updateMeta($lead, $data, $code);
+            $this->leadMetaService->updateMeta($lead, $data, $code);
         } catch (Throwable $e) {
             \Log::info($e);
             throw new LeadMetaUpsertException($e);
@@ -41,10 +41,10 @@ class UpsertVehicleLeadMetaUseCase
         $modelId = $data['vehicle_model_id'];
 
         return [
-            $this->vehicle_prerequisite_service->make($year),
-            $this->vehicle_prerequisite_service->model($year, $makeId),
-            $this->vehicle_prerequisite_service->trim($year, $makeId, $modelId),
-            $this->master_service->findCountryByValue($data['driver_nationality']),
+            $this->vehiclePrerequisiteService->make($year),
+            $this->vehiclePrerequisiteService->model($year, $makeId),
+            $this->vehiclePrerequisiteService->trim($year, $makeId, $modelId),
+            $this->masterService->findCountryByValue($data['driver_nationality']),
         ];
     }
 

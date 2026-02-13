@@ -12,12 +12,12 @@ use App\Shared\Domain\ValueObjects\GenericId;
 class PolicyService
 {
     public function __construct(
-        protected PolicyRepositoryContract $policy_repository_contract
+        protected PolicyRepositoryContract $policyRepositoryContract
     ) {}
 
     public function getPolicyById(GenericId $policyId)
     {
-        return $this->policy_repository_contract->findById($policyId);
+        return $this->policyRepositoryContract->findById($policyId);
     }
 
     public function createPolicy(AddPolicyDto $addPolicyDto)
@@ -32,7 +32,7 @@ class PolicyService
             plan_id: $addPolicyDto->plan_id
         );
 
-        return $this->policy_repository_contract->addPolicy($addPolicyEntity);
+        return $this->policyRepositoryContract->addPolicy($addPolicyEntity);
     }
 
     public function updatePolicy(UpdatePolicyDto $updatePolicyDto)
@@ -46,6 +46,6 @@ class PolicyService
             end_date: $updatePolicyDto->end_date
         );
 
-        return $this->policy_repository_contract->updatePolicy($updatePolicyDto->policy_id, $updatePolicyEntity);
+        return $this->policyRepositoryContract->updatePolicy($updatePolicyDto->policy_id, $updatePolicyEntity);
     }
 }

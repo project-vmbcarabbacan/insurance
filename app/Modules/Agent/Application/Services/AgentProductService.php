@@ -9,27 +9,27 @@ use App\Shared\Domain\ValueObjects\GenericId;
 class AgentProductService
 {
     public function __construct(
-        protected AgentProductRepositoryContract $agent_product_repository_contract
+        protected AgentProductRepositoryContract $agentProductRepositoryContract
     ) {}
 
     public function getAccessByAgentId(GenericId $agentId)
     {
-        return $this->agent_product_repository_contract->findProductsByAgentId($agentId);
+        return $this->agentProductRepositoryContract->findProductsByAgentId($agentId);
     }
 
     public function getAccedByAgentIdAndCode(GenericId $agentId, string $code): ?AgentProductAccess
     {
-        return $this->agent_product_repository_contract->findProductByAgentIdAndCode($agentId, $code);
+        return $this->agentProductRepositoryContract->findProductByAgentIdAndCode($agentId, $code);
     }
 
     public function deleteAccessByAgentId(GenericId $agentId)
     {
-        $this->agent_product_repository_contract->deleteProductsByAgentId($agentId);
+        $this->agentProductRepositoryContract->deleteProductsByAgentId($agentId);
     }
 
     public function upsertAccessed(array $data, array $search, array $update): void
     {
-        $this->agent_product_repository_contract->upsertAgentAccessed($data, $search, $update);
+        $this->agentProductRepositoryContract->upsertAgentAccessed($data, $search, $update);
     }
 
     public function addAccessByAgentId(GenericId $agentId, array $accesses)
@@ -42,6 +42,6 @@ class AgentProductService
             ];
         }
 
-        $this->agent_product_repository_contract->addProductsByAgentId($data);
+        $this->agentProductRepositoryContract->addProductsByAgentId($data);
     }
 }

@@ -15,8 +15,8 @@ use App\Shared\Domain\ValueObjects\Uuid;
 class UpsertHealthLeadMetaUseCase
 {
     public function __construct(
-        protected LeadMetaService $lead_meta_service,
-        protected MasterService $master_service,
+        protected LeadMetaService $leadMetaService,
+        protected MasterService $masterService,
     ) {}
 
     public function execute(Lead $lead, array $data)
@@ -30,16 +30,16 @@ class UpsertHealthLeadMetaUseCase
 
             $uuid = Uuid::fromString($lead->uuid);
 
-            $leadMeta = $this->lead_meta_service->byLeadId($uuid, $code, ['member_count']);
+            $leadMeta = $this->leadMetaService->byLeadId($uuid, $code, ['member_count']);
 
             /* if member_count does not match with the previous count, Delete all the members */
             if ((int) $leadMeta->member_count <> $data['member_count']) {
                 $leadId = GenericId::fromId($lead->id);
-                $keys = $this->lead_meta_service->memberKeys($leadId, $code);
-                $this->lead_meta_service->deleteMeta($leadId, $code, $keys);
+                $keys = $this->leadMetaService->memberKeys($leadId, $code);
+                $this->leadMetaService->deleteMeta($leadId, $code, $keys);
             }
 
-            $this->lead_meta_service->updateMeta($lead, $data, $code);
+            $this->leadMetaService->updateMeta($lead, $data, $code);
         } catch (\Exception $e) {
             throw new LeadMetaUpsertException();
         }
@@ -51,7 +51,7 @@ class UpsertHealthLeadMetaUseCase
             return '';
         }
 
-        $country = $this->master_service->findCountryByValue($nationality);
+        $country = $this->masterService->findCountryByValue($nationality);
 
         return $country['label'] ?? '';
     }

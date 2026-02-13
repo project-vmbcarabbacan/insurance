@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Request;
 class AuthenticationController
 {
     public function __construct(
-        protected AuthenticationService $authentication_service
+        protected AuthenticationService $authenticationService
     ) {}
 
     public function spaLogin(LoginRequest $request, LoginSpa $login_spa)

@@ -13,13 +13,13 @@ class LeadByUuidUseCase
 {
 
     public function __construct(
-        protected LeadService $lead_service,
-        protected LeadMetaService $lead_meta_service
+        protected LeadService $leadService,
+        protected LeadMetaService $leadMetaService
     ) {}
 
     public function execute(Uuid $uuid, array $map)
     {
-        $lead = $this->lead_service->getLeadByUuid($uuid);
+        $lead = $this->leadService->getLeadByUuid($uuid);
 
         if (!$lead) {
             throw new LeadUuidNotFoundException();
@@ -29,9 +29,9 @@ class LeadByUuidUseCase
         // Only merge member keys if product is NOT 'vehicle'
         if ($product_code->value !== 'vehicle') {
             $leadId = GenericId::fromId($lead->id);
-            $map = array_merge($map, $this->lead_meta_service->memberKeys($leadId, $product_code));
+            $map = array_merge($map, $this->leadMetaService->memberKeys($leadId, $product_code));
         }
 
-        return $this->lead_meta_service->byLeadId($uuid, $product_code, $map);
+        return $this->leadMetaService->byLeadId($uuid, $product_code, $map);
     }
 }

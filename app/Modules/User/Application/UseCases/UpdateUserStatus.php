@@ -9,7 +9,7 @@ use App\Shared\Domain\Enums\GenericStatus;
 class UpdateUserStatus
 {
     public function __construct(
-        protected UserService $user_service
+        protected UserService $userService
     ) {}
 
     /**
@@ -24,17 +24,17 @@ class UpdateUserStatus
     {
         match ($userStatusDto->status) {
             GenericStatus::INACTIVE =>
-            $this->user_service->deactivateUser($userStatusDto->user_id),
+            $this->userService->deactivateUser($userStatusDto->user_id),
 
             GenericStatus::SUSPENDED =>
-            $this->user_service->suspendUser($userStatusDto->user_id),
+            $this->userService->suspendUser($userStatusDto->user_id),
 
             GenericStatus::DELETED =>
-            $this->user_service->deleteUser($userStatusDto->user_id),
+            $this->userService->deleteUser($userStatusDto->user_id),
 
             // ACTIVE, DRAFT, or any future "enabled" states
             default =>
-            $this->user_service->activeUser($userStatusDto->user_id),
+            $this->userService->activeUser($userStatusDto->user_id),
         };
     }
 }

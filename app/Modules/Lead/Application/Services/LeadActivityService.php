@@ -13,7 +13,7 @@ use App\Shared\Domain\ValueObjects\LowerText;
 class LeadActivityService
 {
     public function __construct(
-        protected LeadActivityRepositoryContract $lead_activity_repository_contract
+        protected LeadActivityRepositoryContract $leadActivityRepositoryContract
     ) {}
 
     public function addLeadActivity(LeadActivityDto $leadActivityDto)
@@ -26,7 +26,7 @@ class LeadActivityService
             performed_by_id: $leadActivityDto->performed_by_id
         );
 
-        $this->lead_activity_repository_contract->addLeadActivity($leadActivityEntity);
+        $this->leadActivityRepositoryContract->addLeadActivity($leadActivityEntity);
     }
 
     public function generateLeadDto(GenericId $leadId, LeadActivityType $leadActivityType, ?User $user = null, ?string $notes = '')
@@ -44,6 +44,6 @@ class LeadActivityService
 
     public function getAllActivityByLeadId(GenericId $leadId)
     {
-        return $this->lead_activity_repository_contract->getAllLeadActivityByLeadId($leadId);
+        return $this->leadActivityRepositoryContract->getAllLeadActivityByLeadId($leadId);
     }
 }

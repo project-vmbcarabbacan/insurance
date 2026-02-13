@@ -22,7 +22,7 @@ class LoginMobile
      * @param AuthenticationService $authentication_service
      */
     public function __construct(
-        protected AuthenticationService $authentication_service
+        protected AuthenticationService $authenticationService
     ) {}
 
     /**
@@ -39,6 +39,6 @@ class LoginMobile
      */
     public function execute(LoginDto $login)
     {
-        return $this->authentication_service->login($login);
+        return $this->authenticationService->login($login);
     }
 }
