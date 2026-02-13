@@ -61,9 +61,9 @@ class PolicyProviderRepository implements PolicyProviderRepositoryContract
     {
         $query = PolicyProvider::query();
 
-        $query->when($entity->keyword->value(), fn($q, $keyword) => $q->where('name', 'LIKE', "%$keyword%"));
+        $query->when($entity->keyword, fn($q, $keyword) => $q->where('name', 'LIKE', "%{$keyword->value()}%"));
 
-        $query->when($entity->status->value, fn($q, $status) => $q->where('status', $status));
+        $query->when($entity->status, fn($q, $status) => $q->where('status', $status->value));
 
         return $query->paginate($entity->per_page);
     }

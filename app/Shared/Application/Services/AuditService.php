@@ -12,20 +12,20 @@ use App\Shared\Domain\ValueObjects\Uuid;
 class AuditService
 {
     public function __construct(
-        protected AuditRepositoryContract $audit_repository_contract,
-        protected LeadService $lead_service
+        protected AuditRepositoryContract $auditRepositoryContract,
+        protected LeadService $leadService
     ) {}
 
     public function getAudits(MorphType $morph, Uuid $uuid, ?int $perPage = 25)
     {
         $auditableId = GenericId::fromId($this->getId($morph, $uuid));
-        return $this->audit_repository_contract->getAudit($morph, $auditableId, $perPage);
+        return $this->auditRepositoryContract->getAudit($morph, $auditableId, $perPage);
     }
 
     private function getId(MorphType $morph, Uuid $uuid)
     {
         $module =  match ($morph) {
-            MorphType::LEAD => $this->lead_service->getLeadByUuid($uuid),
+            MorphType::LEAD => $this->leadService->getLeadByUuid($uuid),
             default => null
         };
 

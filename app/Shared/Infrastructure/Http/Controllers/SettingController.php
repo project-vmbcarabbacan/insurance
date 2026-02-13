@@ -29,11 +29,11 @@ use Symfony\Component\HttpFoundation\Request;
 class SettingController
 {
     public function __construct(
-        protected RoleService $role_service,
-        protected InsuranceProductService $insurance_product_service,
-        protected MasterService $master_service,
-        protected ProductAgentAccess $product_agent_access,
-        protected LeadService $lead_service
+        protected RoleService $roleService,
+        protected InsuranceProductService $insuranceProductService,
+        protected MasterService $masterService,
+        protected ProductAgentAccess $productAgentAccess,
+        protected LeadService $leadService
     ) {}
 
     /**
@@ -41,7 +41,7 @@ class SettingController
      */
     public function manageTeams(Request $request)
     {
-        $roles = $this->role_service->getAllRoles();
+        $roles = $this->roleService->getAllRoles();
 
         return response()->json([
             'message' => 'Manage team prerequisites',
@@ -57,7 +57,7 @@ class SettingController
      */
     public function assignProduct(Request $request)
     {
-        $products = $this->insurance_product_service->getAllProduct();
+        $products = $this->insuranceProductService->getAllProduct();
 
         return response()->json([
             'message' => 'Assign product prerequisites',
@@ -73,7 +73,7 @@ class SettingController
      */
     public function manageCustomers(Request $request)
     {
-        $products = $this->insurance_product_service->getAllProduct();
+        $products = $this->insuranceProductService->getAllProduct();
         $filtered_products = $this->filterAccessibleProducts($products);
 
         return response()->json([
@@ -92,7 +92,7 @@ class SettingController
      */
     public function upsertCustomer(Request $request)
     {
-        $countryCodes = $this->master_service->getPhoneCountryCode();
+        $countryCodes = $this->masterService->getPhoneCountryCode();
 
         // Set default access to false for all products the agent can access
         $accessed = array_fill_keys(
@@ -119,8 +119,8 @@ class SettingController
      */
     public function detailCustomer(Request $request)
     {
-        $countryCodes = $this->master_service->getPhoneCountryCode();
-        $products = $this->insurance_product_service->getAllProduct();
+        $countryCodes = $this->masterService->getPhoneCountryCode();
+        $products = $this->insuranceProductService->getAllProduct();
         $filtered_products = $this->filterAccessibleProducts($products);
 
         return response()->json([
@@ -135,7 +135,7 @@ class SettingController
 
     public function leadActivity(UuidLeadRequest $request)
     {
-        $lead = $this->lead_service->getLeadByUuid($request->uuid());
+        $lead = $this->leadService->getLeadByUuid($request->uuid());
 
         $responses = LeadActivityResponseMap::map($lead->status);
 
@@ -164,7 +164,7 @@ class SettingController
     {
         $user = getAuthenticatedUser();
         $agentId = GenericId::fromId($user->id);
-        $accessed = $this->product_agent_access->execute($agentId);
+        $accessed = $this->productAgentAccess->execute($agentId);
 
         // Grant full access for admin/super users
         if ($user->isAdmin() || $user->isSuper()) {

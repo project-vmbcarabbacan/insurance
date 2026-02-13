@@ -70,4 +70,4 @@ function convertSnakeToCamelCase($dir)
 }
 
 // Start conversion in the desired subdirectories (Services, UseCases, Controllers)
-convertSnakeToCamelCase('app/Modules'); // Replace with the base folder if necessary
+convertSnakeToCamelCase('app/Shared'); // Replace with the base folder if necessary

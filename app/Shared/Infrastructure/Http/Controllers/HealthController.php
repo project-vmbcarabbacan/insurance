@@ -23,14 +23,14 @@ use Illuminate\Support\Facades\Request;
 class HealthController
 {
     public function __construct(
-        protected VehiclePrerequisiteService $vehicle_prerequisite_service,
-        protected MasterService $master_service
+        protected VehiclePrerequisiteService $vehiclePrerequisiteService,
+        protected MasterService $masterService
     ) {}
 
     public function leadHealth(Request $request)
     {
 
-        $countries = $this->master_service->countries();
+        $countries = $this->masterService->countries();
 
         return response()->json([
             'message' => 'Manage lead health prerequisites',
@@ -52,7 +52,7 @@ class HealthController
 
     public function getMakes(VehicleMakeRequest $request)
     {
-        $makes = $this->vehicle_prerequisite_service->makes($request->year);
+        $makes = $this->vehiclePrerequisiteService->makes($request->year);
 
         return response()->json([
             'message' => 'Vehicle makes',
@@ -62,7 +62,7 @@ class HealthController
 
     public function getModels(VehicleModelRequest $request)
     {
-        $models = $this->vehicle_prerequisite_service->models($request->year, $request->make_id);
+        $models = $this->vehiclePrerequisiteService->models($request->year, $request->make_id);
 
         return response()->json([
             'message' => 'Vehicle models',
@@ -72,7 +72,7 @@ class HealthController
 
     public function getTrims(VehicleTrimRequest $request)
     {
-        $trims = $this->vehicle_prerequisite_service->trims($request->year, $request->make_id, $request->model_id);
+        $trims = $this->vehiclePrerequisiteService->trims($request->year, $request->make_id, $request->model_id);
 
         return response()->json([
             'message' => 'Vehicle trims',

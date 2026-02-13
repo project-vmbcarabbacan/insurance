@@ -4,6 +4,7 @@ namespace App\Shared\Infrastructure\Routes;
 
 use App\Shared\Infrastructure\Http\Controllers\AuditController;
 use App\Shared\Infrastructure\Http\Controllers\HealthController;
+use App\Shared\Infrastructure\Http\Controllers\PolicyProviderController;
 use App\Shared\Infrastructure\Http\Controllers\SettingController;
 use App\Shared\Infrastructure\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,26 @@ Route::middleware('auth:sanctum')->prefix('setting')->group(function () {
 
     Route::prefix('health')->group(function () {
         Route::get('prerequisites', [HealthController::class, 'leadHealth'])
+            ->middleware('throttle:60,1');
+    });
+
+    Route::prefix('providers')->group(function () {
+        Route::get('/paginate', [PolicyProviderController::class, 'paginateIndex'])
+            ->middleware('throttle:60,1');
+
+        Route::post('store', [PolicyProviderController::class, 'upsert'])
+            ->middleware('throttle:60,1');
+
+        Route::put('update/{provider}', [PolicyProviderController::class, 'upsert'])
+            ->middleware('throttle:60,1');
+
+        Route::get('search/{provider}', [PolicyProviderController::class, 'search'])
+            ->middleware('throttle:60,1');
+
+        Route::patch('status', [PolicyProviderController::class, 'statusUpdate'])
+            ->middleware('throttle:60,1');
+
+        Route::get('active', [PolicyProviderController::class, 'active'])
             ->middleware('throttle:60,1');
     });
 });

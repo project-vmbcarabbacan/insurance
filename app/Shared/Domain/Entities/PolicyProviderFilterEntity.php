@@ -8,8 +8,8 @@ use App\Shared\Domain\ValueObjects\LowerText;
 class PolicyProviderFilterEntity
 {
     public function __construct(
-        public readonly ?LowerText $keyword = '',
-        public readonly ?GenericStatus $status = '',
+        public readonly ?LowerText $keyword = null,
+        public readonly ?GenericStatus $status = null,
         public readonly ?int $per_page = 25
     ) {}
 }

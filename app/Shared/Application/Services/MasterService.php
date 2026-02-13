@@ -8,21 +8,21 @@ use Illuminate\Support\Facades\Storage;
 class MasterService
 {
     public function __construct(
-        protected CountryRepositoryContract $country_repository_contract
+        protected CountryRepositoryContract $countryRepositoryContract
     ) {}
 
     public function getPhoneCountryCode(): array
     {
-        return $this->country_repository_contract->phoneCountryCodes();
+        return $this->countryRepositoryContract->phoneCountryCodes();
     }
 
     public function countries(): array
     {
-        return $this->country_repository_contract->countries();
+        return $this->countryRepositoryContract->countries();
     }
 
     public function findCountryByValue(string $value): array
     {
-        return $this->country_repository_contract->findCountryByValue($value);
+        return $this->countryRepositoryContract->findCountryByValue($value);
     }
 }
